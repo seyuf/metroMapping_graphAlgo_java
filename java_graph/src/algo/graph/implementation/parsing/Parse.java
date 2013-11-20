@@ -10,11 +10,12 @@ import algo.graph.Graph;
 
 public class Parse 
 {
-	ArrayList<Item> relationString = new ArrayList<Item>();
-	ArrayList<Routes> routes = new ArrayList<Routes>();
-	ArrayList<StopTimes> stop_times = new ArrayList<StopTimes>();
-	ArrayList<Trips> trips = new ArrayList<Trips>();
-	ArrayList<Stops> stops = new ArrayList<Stops>();
+	public static ArrayList<Item> relationString = new ArrayList<Item>();
+	public static ArrayList<Geo> coordonneesStops = new ArrayList<Geo>();
+	public static ArrayList<Routes> routes = new ArrayList<Routes>();
+	public static ArrayList<StopTimes> stop_times = new ArrayList<StopTimes>();
+	public static ArrayList<Trips> trips = new ArrayList<Trips>();
+	public static ArrayList<Stops> stops = new ArrayList<Stops>();
 	Graph g = new Graph();
 	
 	public Parse()
@@ -99,16 +100,44 @@ public class Parse
 			while ((ligneStops = brStops.readLine()) != null)
 			{
 				String [] splitStops = ligneStops.split(",");
-				stops.add(new Stops(splitStops[0],splitStops[2],splitStops[3],splitStops[4]));
+				stops.add(new Stops(splitStops[0],splitStops[2],splitStops[3],splitStops[4],splitStops[7]));
 			}
 			brStops.close();
 			
-			System.out.println("Nombre de routes : " + routes.size());
+			
+			String fichierGeo= "geo.csv";
+			InputStream ipsGeo = new FileInputStream(fichierGeo); 
+			InputStreamReader ipsrGeo = new InputStreamReader(ipsGeo);
+			BufferedReader brGeo = new BufferedReader(ipsrGeo);
+			
+			String ligneGeo;
+			brGeo.readLine();
+			while ((ligneGeo = brGeo.readLine()) != null)
+			{
+				String [] splitGeo = ligneGeo.split("#");
+				coordonneesStops.add(new Geo(splitGeo[0],splitGeo[1],splitGeo[2]));
+			}
+			brGeo.close();
+
+			for(int i = 0 ; i < stops.size() ; i++)
+			{
+				for(int j = 0 ; j < coordonneesStops.size() ; j++)
+				{
+					if(coordonneesStops.get(j).id.equals(stops.get(i).parent))
+					{						
+						stops.get(i).stop_lat = coordonneesStops.get(j).latitude;
+						stops.get(i).stop_long = coordonneesStops.get(j).longitude;
+					}
+				}
+			}
+			
+			/* System.out.println("Nombre de routes : " + routes.size());
 			System.out.println("Nombre de Stop times : " + stop_times.size());
 			System.out.println("Nombre de trips : " + trips.size());
-			System.out.println("Nombre d'arrêt : " + stops.size());
+			System.out.println("Nombre d'arrêt : " + stops.size()); */
 			
-			System.out.println("FINISH");
+			System.out.println("Parsing terminé");
+			System.out.println("");
 			
 			// Boucle permettant de stockers les différentes correspondance
 			for(Routes route : routes)
@@ -128,9 +157,9 @@ public class Parse
 					}
 				}
 				
-				String depart = "";
-				String arrive = "";
-				// System.out.println("DEBUT DU PARCOURT");
+				Stops depart = null;
+				Stops arrive = null;
+
 				for(int i = 0 ; i < relationString.size() ; i++)
 				{
 					if(i < relationString.size() - 1)
@@ -138,10 +167,10 @@ public class Parse
 						for(Stops stop : stops)
 						{
 							if(stop.stop_id.equals(relationString.get(i).depart))
-								depart = stop.stop_name;
+								depart = stop;
 							
 							if(stop.stop_id.equals(relationString.get(i+1).depart))
-								arrive = stop.stop_name;
+								arrive = stop;
 						}
 						
 						int hDepart =  Integer.parseInt(relationString.get(i).date.substring(0,2));	
@@ -155,130 +184,17 @@ public class Parse
 						 
 						// calcul de l'écart en minutes
 						int ecart = mTotal2-mTotal1;
-						
-						g.addRoute(depart,arrive,ecart,relationString.get(i).ligne);
-						// System.out.println(depart + " => " + arrive + " Time : " + relationString.get(i+1).date + " - " + relationString.get(i).date + " Mode de transport : " + relationString.get(i).modeTransport + " Ligne : " + relationString.get(i).ligne + " Ecart : " + ecart);
+									
+						g.addRoute(depart,arrive,ecart,relationString.get(i).modeTransport,relationString.get(i).ligne);
 					}
 				}
-				// System.out.println("FIN DU PARCOURT");
 				relationString.clear();
 			}
-		// Parcourt des fichiers pour la création du Graph
-		/*try
-		{
-			String fichierRoutes ="routes.txt";
-			InputStream ips = new FileInputStream(fichierRoutes); 
-			InputStreamReader ipsr = new InputStreamReader(ips);
-			BufferedReader br = new BufferedReader(ipsr);
-			String ligneRoutes;
-			String numTrips_ID = "";
-			
-			br.readLine();
-			
-			while ((ligneRoutes = br.readLine()) != null)
-			{
-				String [] splitRoutes = ligneRoutes.split(",");
-				
-				// System.out.println("Numero de la route : " + splitRoutes[0] + " numero de la ligne : " + splitRoutes[2]);
-				
-				// Ne pas tenir compte des bus
-				if(splitRoutes[2].length() < 3)
-				{
-				// Parcourt du fichier Trips
-				String fichierTrips = "trips.txt";
-				InputStream ipsTrips = new FileInputStream(fichierTrips); 
-				InputStreamReader ipsrTrips = new InputStreamReader(ipsTrips);
-				BufferedReader brTrips = new BufferedReader(ipsrTrips);
-				
-				String ligneTrips;
-				brTrips.readLine();
-				while ((ligneTrips = brTrips.readLine())!=null)
-				{
-					String [] splitTrips = ligneTrips.split(",");
-					// System.out.println(ligneTrips);
-					
-					if(splitTrips[0].equals(splitRoutes[0]))
-					{
-						numTrips_ID = splitTrips[2];
-						break;
-					}
-				}
-				
-			    // System.out.println("Numero de trips : " + numTrips_ID);
-				
-				// Parcourt du fichier stop_times.txt
-				String fichierStop_Times = "stop_times.txt";
-				InputStream ipsStop_Times = new FileInputStream(fichierStop_Times); 
-				InputStreamReader ipsrStop_Times = new InputStreamReader(ipsStop_Times);
-				BufferedReader brStop_Times = new BufferedReader(ipsrStop_Times);
-				
-				String ligneStop_Times;
-				brStop_Times.readLine();
-				while ((ligneStop_Times = brStop_Times.readLine()) != null)
-				{
-					String [] splitStop_Times  = ligneStop_Times.split(",");
 
-					if(splitStop_Times[0].equals(numTrips_ID))
-					{
-						//System.out.println("Num : " + splitStop_Times[3]);
-
-						Item item = new Item(splitStop_Times[3],splitStop_Times[2]);
-						relationString.add(item);*/
-			
-						/*int ordre = 0 ;
-						while(Integer.parseInt(splitStop_Times[4]) > ordre)
-						{
-							
-							ligneStop_Times = brStop_Times.readLine();
-							splitStop_Times  = ligneStop_Times.split(",");
-							
-							ordre = Integer.parseInt(splitStop_Times[4]);
-							System.out.println("Num : " + splitStop_Times[3]);
-						}*/
-						
-						/*//System.out.println("Numero de station : " + splitStop_Times[3] + " ordre : " + splitStop_Times[4]);
-						
-						String numStation = splitStop_Times[3];
-						int ordre = Integer.parseInt(splitStop_Times[4]);
-							
-						// Parcourt 
-						ligneStop_Times = brStop_Times.readLine();
-						splitStop_Times  = ligneStop_Times.split(",");
-						
-						if(splitStop_Times[0].equals(numTrips_ID))
-						{
-							System.out.println("Ordre : " + ordre);
-							if(ordre < Integer.parseInt(splitStop_Times[4]))
-							{
-								System.out.println(numStation + " => " + splitStop_Times[3]);
-							}
-						}
-						
-						else 
-							break;*/
-				/*	}
-				}
-				
-				System.out.println("Pour le voyage : " + numTrips_ID);
-				for(int i = 0 ; i < relationString.size() ; i++)
-				{
-					if(i < relationString.size() - 1)
-					{
-						System.out.println(relationString.get(i).depart + " => " + relationString.get(i+1).depart + " Time : " + relationString.get(i+1).date + " - " + relationString.get(i).date);
-					}
-				}
-				
-				System.out.println();
-				}
-			}*/
 		}		
 		catch (Exception e){
 			System.out.println(e.toString());
 		}
 		return g;
-		
-		
 	}
-
-
 }
