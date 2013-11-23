@@ -1,11 +1,10 @@
-package algo.graph.interfaces;
+package algo.graph.implementation.interfaces;
 
 import java.util.List;
 import java.util.Map;
 
-import algo.graph.Graph;
-import algo.graph.Node;
-import algo.graph.parsing.Stops;
+import algo.graph.implementation.parsing.Stops;
+import algo.graph.implementation.Node;
 
 public interface IGraph
 {

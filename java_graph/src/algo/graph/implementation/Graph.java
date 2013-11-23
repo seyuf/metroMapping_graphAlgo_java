@@ -1,15 +1,14 @@
-package algo.graph;
+package algo.graph.implementation;
 
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import algo.graph.interfaces.IGraph;
-import algo.graph.interfaces.INode;
-import algo.graph.interfaces.IRelation;
-import algo.graph.parsing.Parse;
-import algo.graph.parsing.Stops;
+import algo.graph.implementation.Node;
+import algo.graph.implementation.interfaces.IGraph;
+import algo.graph.implementation.parsing.Parse;
+import algo.graph.implementation.parsing.Stops;
 
 public class Graph implements IGraph
 {
@@ -69,7 +68,7 @@ public class Graph implements IGraph
 	
 	/*Initialisation(G,sdeb)
 	1 pour chaque point s de G
-	2    faire d[s] := infini              on initialise les sommets autres que sdeb à infini 
+	2    faire d[s] := infini              on initialise les sommets autres que sdeb ï¿½ infini 
 	3 d[sdeb] := 0 */
 	
 	public void Init(Map<String, Node> node,Node depart)
@@ -90,7 +89,7 @@ public class Graph implements IGraph
 	{
 		for(int i = 0 ; i < node.get(start.town).getRelations().size() ; i++)
 		{
-			if(node.get(start.town).getRelations().get(i).getEndNode().town.equals(end.town))
+			if(node.get(start.town).getRelations().get(i).getEndNode().toString().equals(end.town))
 				return node.get(start.town).getRelations().get(i).getWeight();			
 		}
 		
@@ -112,10 +111,10 @@ public class Graph implements IGraph
 				//listNode.add(graphTotal.get(ville));
 				for(int i = 0 ; i < graphTotal.get(ville).getRelations().size() ; i++)
 				{
-					if(graphTotal.get(ville).getRelations().get(i).getStartNode().town.equals(ville))
+					if(graphTotal.get(ville).getRelations().get(i).getStartNode().toString().equals(ville))
 					{
 						if(graphTotal.get(ville).getRelations().get(i).getLigneTransport().equals(modeTransport))
-							listNode.add(graphTotal.get(ville).getRelations().get(i).getEndNode());
+							listNode.add((Node) graphTotal.get(ville).getRelations().get(i).getEndNode());
 					}
 				}
 			}

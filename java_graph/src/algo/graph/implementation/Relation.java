@@ -1,7 +1,7 @@
-package algo.graph;
+package algo.graph.implementation;
 
-import algo.graph.interfaces.INode;
-import algo.graph.interfaces.IRelation;
+import algo.graph.implementation.interfaces.INode;
+import algo.graph.implementation.interfaces.IRelation;
 
 public class Relation implements IRelation
 {

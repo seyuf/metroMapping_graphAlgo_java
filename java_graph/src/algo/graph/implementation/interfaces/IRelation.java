@@ -1,6 +1,5 @@
-package algo.graph.interfaces;
-
-import algo.graph.Node;
+package algo.graph.implementation.interfaces;
+import algo.graph.implementation.Node;
 
 public interface IRelation
 {

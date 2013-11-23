@@ -1,4 +1,4 @@
-package algo.graph;
+package algo.graph.implementation;
 
 public class Compare 
 {

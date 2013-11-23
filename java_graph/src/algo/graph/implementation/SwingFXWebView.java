@@ -1,4 +1,4 @@
-package algo.graph;
+package algo.graph.implementation;
 import com.sun.javafx.application.PlatformImpl;
 import com.sun.prism.paint.Color;
 

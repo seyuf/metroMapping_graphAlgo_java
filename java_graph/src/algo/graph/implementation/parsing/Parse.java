@@ -1,4 +1,4 @@
-package algo.graph.parsing;
+package algo.graph.implementation.parsing;
 
 import java.io.BufferedReader;
 import java.io.FileInputStream;
@@ -6,7 +6,7 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.util.ArrayList;
 
-import algo.graph.Graph;
+import algo.graph.implementation.Graph;
 
 public class Parse 
 {
@@ -25,10 +25,10 @@ public class Parse
 	
 	public Graph getGraph()
 	{
-		// Création du Graph a retourner
+		// Crï¿½ation du Graph a retourner
 		try
 		{
-			// Chargement du fichier permettant de récupérer toutes les routes du réseaux RATP/SNCF
+			// Chargement du fichier permettant de rï¿½cupï¿½rer toutes les routes du rï¿½seaux RATP/SNCF
 			String fichierRoutes ="routes.txt";
 			InputStream ips = new FileInputStream(fichierRoutes); 
 			InputStreamReader ipsr = new InputStreamReader(ips);
@@ -57,7 +57,7 @@ public class Parse
 			}
 			br.close();
 			
-			// Chargement du fichier permettant de récupérer les correspondances et les délais entre les stations 
+			// Chargement du fichier permettant de rï¿½cupï¿½rer les correspondances et les dï¿½lais entre les stations 
 			String fichierStop_Times = "stop_times.txt";
 			InputStream ipsStop_Times = new FileInputStream(fichierStop_Times); 
 			InputStreamReader ipsrStop_Times = new InputStreamReader(ipsStop_Times);
@@ -73,7 +73,7 @@ public class Parse
 			
 			brStop_Times.close();
 			
-			// Parcourt du fichier permettant de recupérer les chemins des différentes lignes du reseau
+			// Parcourt du fichier permettant de recupï¿½rer les chemins des diffï¿½rentes lignes du reseau
 			String fichierTrips = "trips.txt";
 			InputStream ipsTrips = new FileInputStream(fichierTrips); 
 			InputStreamReader ipsrTrips = new InputStreamReader(ipsTrips);
@@ -89,7 +89,7 @@ public class Parse
 			brTrips.close();
 			
 
-			// Parcourt du fichier permettant de recupérer les chemins des différentes lignes du reseau
+			// Parcourt du fichier permettant de recupï¿½rer les chemins des diffï¿½rentes lignes du reseau
 			String fichierStops = "stops.txt";
 			InputStream ipsStops = new FileInputStream(fichierStops); 
 			InputStreamReader ipsrStops = new InputStreamReader(ipsStops);
@@ -104,7 +104,7 @@ public class Parse
 			}
 			brStops.close();
 			
-			
+			/*
 			String fichierGeo= "geo.csv";
 			InputStream ipsGeo = new FileInputStream(fichierGeo); 
 			InputStreamReader ipsrGeo = new InputStreamReader(ipsGeo);
@@ -118,6 +118,7 @@ public class Parse
 				coordonneesStops.add(new Geo(splitGeo[0],splitGeo[1],splitGeo[2]));
 			}
 			brGeo.close();
+			*/
 
 			for(int i = 0 ; i < stops.size() ; i++)
 			{
@@ -134,12 +135,12 @@ public class Parse
 			/* System.out.println("Nombre de routes : " + routes.size());
 			System.out.println("Nombre de Stop times : " + stop_times.size());
 			System.out.println("Nombre de trips : " + trips.size());
-			System.out.println("Nombre d'arrêt : " + stops.size()); */
+			System.out.println("Nombre d'arrï¿½t : " + stops.size()); */
 			
-			System.out.println("Parsing terminé");
+			System.out.println("Parsing terminï¿½");
 			System.out.println("");
 			
-			// Boucle permettant de stockers les différentes correspondance
+			// Boucle permettant de stockers les diffï¿½rentes correspondance
 			for(Routes route : routes)
 			{
 				for(Trips trip : trips)
@@ -182,7 +183,7 @@ public class Parse
 						int mTotal1 = hDepart*60+minDepart;
 						int mTotal2 = hFinal*60+minFinal;
 						 
-						// calcul de l'écart en minutes
+						// calcul de l'ï¿½cart en minutes
 						int ecart = mTotal2-mTotal1;
 									
 						g.addRoute(depart,arrive,ecart,relationString.get(i).modeTransport,relationString.get(i).ligne);
