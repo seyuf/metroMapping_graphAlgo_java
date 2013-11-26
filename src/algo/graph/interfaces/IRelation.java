@@ -10,4 +10,5 @@ public interface IRelation
 	public void setStartNode(Node nodeStart);
 	public void setEndNode(Node nodeEnd);
 	public String getLigneTransport();
+	public void setWeight(int Weight);
 }

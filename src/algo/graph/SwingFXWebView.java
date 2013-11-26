@@ -1,19 +1,13 @@
 package algo.graph;
+
 import com.sun.javafx.application.PlatformImpl;
-import com.sun.prism.paint.Color;
 
 import java.awt.BorderLayout;
-import java.awt.Dimension;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileWriter;
-import java.io.IOException;
-import java.net.MalformedURLException;
 import java.net.URL;
 
-import javafx.application.Platform;
 import javafx.collections.ObservableList;
 import javafx.embed.swing.JFXPanel;
 import javafx.scene.Group;
@@ -24,13 +18,8 @@ import javafx.scene.web.WebView;
 import javafx.stage.Stage;
 
 import javax.swing.JButton;
-import javax.swing.JFrame;
 import javax.swing.JPanel;
-import javax.swing.SwingUtilities;
   
-/** 
- * SwingFXWebView 
- */  
 public class SwingFXWebView extends JPanel 
 {    
     private Stage stage;  
@@ -46,7 +35,7 @@ public class SwingFXWebView extends JPanel
         initComponents();
         contentHTML = content;
         nameFile = type;
-    }  
+    }
     
     public SwingFXWebView()
     {  

@@ -10,16 +10,16 @@ public class Node implements INode
 {
 	private List<IRelation> relation;
 	public String town;
-	public Node nodePrecedent;
+	public Node previousNode;
 	public String latitude;
 	public String longitude;
-	public Integer poids;
-	public String ligne;
+	public Integer weight;
+	public String line;
 	
 	public Node()
 	{
 		relation = new ArrayList<IRelation>();
-		poids = new Integer(0);
+		weight = new Integer(0);
 	}
 	
 	public String toString()

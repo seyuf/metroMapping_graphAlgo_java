@@ -21,12 +21,13 @@ public class Graph implements IGraph
 		listRelation = new ArrayList<Compare>();
 	}
 	
-	public void addRoute(Stops start, Stops target, int weight,String ligne, String mode) 
+	public void addRoute(Stops start, Stops target, int weight,String line, String modeTransport) 
 	{
 		Compare comp = new Compare(start.stop_name,target.stop_name);
 		
 		int isDouble = 0;
 		
+		//System.out.println("Ligne : " + mode);
 		for(int i = 0 ; i < listRelation.size() ; i++)
 		{
 			if(listRelation.get(i).depart.equals(start) && listRelation.get(i).arrive.equals(target))
@@ -34,14 +35,14 @@ public class Graph implements IGraph
 		}
 		
 		if(isDouble == 0)
-		{	
+		{
 			Node n1 = (Node) node.get(start.stop_name);
 			Node n2 = (Node) node.get(target.stop_name);
 			
 			if(n1 == null)
 			{
 				n1 = new Node(start.stop_name,start.stop_lat,start.stop_long);
-				n1.poids = 0;
+				n1.weight = 0;
 				node.put(start.stop_name,n1);
 			}
 			
@@ -50,14 +51,14 @@ public class Graph implements IGraph
 				n2 = new Node(target.stop_name,target.stop_lat,target.stop_long);
 
 				int poidsn1 = 0;
-				if(n1.poids != null)
-					poidsn1 = n1.poids;
+				if(n1.weight != null)
+					poidsn1 = n1.weight;
 				
-				n2.poids = poidsn1 + weight;
+				n2.weight = poidsn1 + weight;
 				node.put(target.stop_name,n2);
 			}
 			
-			Relation r = new Relation(n1,n2,weight,ligne,mode);
+			Relation r = new Relation(n1,n2,weight,line,modeTransport);
 			
 			listRelation.add(comp);
 			n1.addRelation(r);
@@ -65,27 +66,21 @@ public class Graph implements IGraph
 		}
 	}
 	
-	
-	/*Initialisation(G,sdeb)
-	1 pour chaque point s de G
-	2    faire d[s] := infini              on initialise les sommets autres que sdeb � infini 
-	3 d[sdeb] := 0 */
-	
-	public void Init(Map<String, Node> node,Node depart)
+	public void Init(Map<String, Node> node,Node start)
 	{
 		for(String ville : node.keySet())
 		{
-			if(!ville.equals(depart.town))
+			if(!ville.equals(start.town))
 			{
-				node.get(ville).poids = 9999999;
-				node.get(ville).nodePrecedent = null;
+				node.get(ville).weight = 9999999;
+				node.get(ville).previousNode = null;
 			}
 		}
 		
-		node.get(depart.town).poids = 0;
+		node.get(start.town).weight = 0;
 	}
 	
-	public Integer Poids(Node start,Node end)
+	public Integer Weight(Node start,Node end)
 	{
 		for(int i = 0 ; i < node.get(start.town).getRelations().size() ; i++)
 		{
@@ -96,9 +91,10 @@ public class Graph implements IGraph
 		return 0;
 	}
 
+	// This method allow create an list with the station of the graph
 	public void createListGraph(Map<String, Node> graphTotal,List<Node> listNode,String modeTransport)
 	{
-		if(modeTransport == "TOUS")
+		if(modeTransport == "TOUS") // If the mode of transport is "Tous" then add all of the graph
 		{
 			for(String ville : graphTotal.keySet())
 				listNode.add(graphTotal.get(ville));
@@ -106,68 +102,67 @@ public class Graph implements IGraph
 		
 		else
 		{	
-			for(String ville : graphTotal.keySet())
+			for(String station : graphTotal.keySet())
 			{
-				//listNode.add(graphTotal.get(ville));
-				for(int i = 0 ; i < graphTotal.get(ville).getRelations().size() ; i++)
+				for(int i = 0 ; i < graphTotal.get(station).getRelations().size() ; i++)
 				{
-					if(graphTotal.get(ville).getRelations().get(i).getStartNode().toString().equals(ville))
+					if(graphTotal.get(station).getRelations().get(i).getStartNode().toString().equals(station))
 					{
-						if(graphTotal.get(ville).getRelations().get(i).getLigneTransport().equals(modeTransport))
-							listNode.add((Node) graphTotal.get(ville).getRelations().get(i).getEndNode());
+						if(graphTotal.get(station).getRelations().get(i).getLigneTransport().equals(modeTransport))
+							listNode.add((Node) graphTotal.get(station).getRelations().get(i).getEndNode());
 					}
 				}
 			}
 		}
 	}
 	
-	public List<Node> Dijkstra(Map<String, Node> graph,String depart,String fin,String modeTransport)
+	// Method Dijkstra : Algorithm to search shortest route between 2 stations
+	public List<Node> Dijkstra(Map<String, Node> graph,String start,String end,String modeTransport,String critere)
 	{
 		try
 		{
-			// Initialisation des sommets du graph
-			Init(graph,graph.get(depart));
+			// Initialization of the summits of graph
+			Init(graph,graph.get(start));
 			
-			// Creation liste avec tous les points
+			// Create list with all stations
 			List<Node> listNode = new ArrayList<Node>();
+			
 			createListGraph(graph,listNode,modeTransport);
 			
 			Node n1 = new Node();
 			
-			// for(Node node : listNode) System.out.println(node.town + " : " + node.poids);
-			
-			// Parcourt de la liste tant que celle-ci est vide
+			// Traverses the list until it is empty
 			while(listNode.size() != 0)
 			{
 				n1 = Trouve_min(listNode);
 				listNode.remove(n1);
 				
+				// Traverses the relations of the current station
 				for(int i = 0 ; i < graph.get(n1.town).getRelations().size() ; i++)
-				{				
+				{		
 					if(graph.get(n1.town).getRelations().get(i).getStartNode().town.equals(n1.town))
-					{
-						if(graph.get(n1.town).getRelations().get(i).getEndNode().poids > graph.get(n1.town).getRelations().get(i).getStartNode().poids + Poids(graph.get(n1.town).getRelations().get(i).getStartNode(),graph.get(n1.town).getRelations().get(i).getEndNode()))
+					{						
+						if(graph.get(n1.town).getRelations().get(i).getEndNode().weight > graph.get(n1.town).getRelations().get(i).getStartNode().weight + Weight(graph.get(n1.town).getRelations().get(i).getStartNode(),graph.get(n1.town).getRelations().get(i).getEndNode()))
 						{
-							graph.get(n1.town).getRelations().get(i).getEndNode().poids = graph.get(n1.town).getRelations().get(i).getStartNode().poids + Poids(graph.get(n1.town).getRelations().get(i).getStartNode(),graph.get(n1.town).getRelations().get(i).getEndNode());
-							graph.get(n1.town).getRelations().get(i).getEndNode().nodePrecedent = graph.get(n1.town).getRelations().get(i).getStartNode();
-						
+							graph.get(n1.town).getRelations().get(i).getEndNode().weight = graph.get(n1.town).getRelations().get(i).getStartNode().weight + Weight(graph.get(n1.town).getRelations().get(i).getStartNode(),graph.get(n1.town).getRelations().get(i).getEndNode());
+							graph.get(n1.town).getRelations().get(i).getEndNode().previousNode = graph.get(n1.town).getRelations().get(i).getStartNode();
+													
 							try
 							{
-								graph.get(n1.town).getRelations().get(i).getEndNode().ligne = graph.get(n1.town).getRelations().get(i).getmodeTransport();
+								graph.get(n1.town).getRelations().get(i).getEndNode().line = graph.get(n1.town).getRelations().get(i).getmodeTransport();
 								
-								// System.out.println("Ligne : " + graph.get(n1.town).getRelations().get(i).getLigneTransport());
-								if(graph.get(n1.town).getRelations().get(i).getStartNode().ligne != null)
+								if(graph.get(n1.town).getRelations().get(i).getStartNode().line != null)
 								{
-									if(!graph.get(n1.town).getRelations().get(i).getStartNode().ligne.equalsIgnoreCase(graph.get(n1.town).getRelations().get(i).getEndNode().ligne))
+									if(!graph.get(n1.town).getRelations().get(i).getStartNode().line.equalsIgnoreCase(graph.get(n1.town).getRelations().get(i).getEndNode().line))
 									{
-										/*if(graph.get(n1.town).getRelations().get(i).getEndNode().town.equals("Chatelet"))
-										{
-											System.out.println("Start node : " + graph.get(n1.town).getRelations().get(i).getStartNode().town);
-											System.out.println("End node : " + graph.get(n1.town).getRelations().get(i).getEndNode().town);
-										}*/
-										
-										// graph.get(n1.town).getRelations().get(i).setWeight(graph.get(n1.town).getRelations().get(i).getWeight() + 5);
-										graph.get(n1.town).getRelations().get(i).getEndNode().poids += 5;
+										if(critere.equals("CORRESPONDANCE"))
+										{			
+											if(!graph.get(n1.town).getRelations().get(i).getEndNode().line.equals(graph.get(end).line))
+												graph.get(n1.town).getRelations().get(i).getEndNode().weight += 100;
+										}
+
+										else
+											graph.get(n1.town).getRelations().get(i).getEndNode().weight += 5;
 									}
 								}
 							}
@@ -178,19 +173,53 @@ public class Graph implements IGraph
 						}
 					}
 				}
-				
 			}
 			
 			List<Node> chemin = new ArrayList<Node>();
-			Node n = graph.get(fin);
+			Node n = graph.get(end);
 			
-			while(n != graph.get(depart))
+			while(n != graph.get(start))
 			{
 				chemin.add(n);
-				n = n.nodePrecedent;
+				n = n.previousNode;
 			}
-			chemin.add(graph.get(depart));
+			chemin.add(graph.get(start));
 			
+			System.out.println("AFFICHAGE : ");
+			String tempLigne = chemin.get(0).line;
+			
+			chemin.get(chemin.size()-1).line = chemin.get(chemin.size()-2).line;
+			for(int i = 0 ; i < chemin.size() ; i++)
+			{
+				System.out.println(chemin.get(i).town + " Ligne : " + chemin.get(i).line);	
+			}
+			
+			/*
+			if(critere.equals("CORRESPONDANCE"))
+			{
+				System.out.println("OK RE INITIALISATION");
+				// Récupération de la ligne de la station de fin
+				if(getRelation(fin) == 1)
+				{
+						ligneEnd = graph.get(fin).getRelations().get(0).getmodeTransport();
+				}
+				
+				// Si la station de départ fait parti de la même ligne que la station de fin
+				for(int i = 0 ; i < graph.get(depart).getRelations().size() ;i++)
+				{
+					if(!graph.get(depart).getRelations().get(i).getmodeTransport().equals(ligneEnd))
+					{
+						graph.get(depart).getRelations().get(i).setWeight(graph.get(depart).getRelations().get(i).getWeight()-10000);
+					}
+				}
+			}*/
+			
+			System.out.println();
+			System.out.println();
+			System.out.println();
+			System.out.println("FIN");
+			
+												
 			return chemin;
 		}
 		catch(Exception E)
@@ -207,7 +236,7 @@ public class Graph implements IGraph
 		
 		for(int i = 1 ; i < listGraph.size() ; i++)
 		{
-			if(min.poids > listGraph.get(i).poids)
+			if(min.weight > listGraph.get(i).weight)
 				min = listGraph.get(i);
 		}
 		
@@ -219,7 +248,7 @@ public class Graph implements IGraph
 		// Algorithme de Dijkstra
 		 for(String ville : node.keySet())
 		 {
-			System.out.println("Poids de " + ville + " : " + node.get(ville).poids);
+			System.out.println("Poids de " + ville + " : " + node.get(ville).weight);
 			
 			System.out.println("");
 		 }		
@@ -248,10 +277,25 @@ public class Graph implements IGraph
 		Parse parse = new Parse();
 		Graph g = parse.getGraph();
 		
-		List<Node> chemin = g.Dijkstra(g.node,"La Courneuve-8-Mai-1945","Buttes-Chaumont","TOUS");
 		
+		 /*for(String ville : g.node.keySet())
+		 {
+			 if(g.getRelation(ville) > 1)
+			 {
+				 for(int i = 0 ; i < g.node.get(ville).getRelations().size() ; i++)
+				 {
+					 System.out.println(g.node.get(ville).getRelations().get(i).getStartNode().town + " => " + g.node.get(ville).getRelations().get(i).getEndNode().town);
+				 }
+			 }
+		 }*/
+		
+		//List<Node> chemin = g.Dijkstra(g.node,"La Courneuve-8-Mai-1945","Balard","TOUS");
+		List<Node> chemin = g.Dijkstra(g.node,"La Courneuve-8-Mai-1945","Buttes-Chaumont","TOUS","OK");
+		// List<Node> chemin = g.Dijkstra(g.node,"Balard","Pointe du Lac","TOUS","OK");
+		
+		//List<Node> chemin = g.Test(g.node,"La Courneuve-8-Mai-1945","Buttes-Chaumont");
 		String ligne = "";
-		for(int i = chemin.size()-1 ; i >= 0  ; i--)
+		/*for(int i = chemin.size()-1 ; i >= 0  ; i--)
 		{
 			if(i != 0)
 			{
@@ -269,40 +313,26 @@ public class Graph implements IGraph
 			{
 				chemin.get(i).ligne = ligne;
 			}
-		}
+		}*/
 		
 		String messageDisplay = "";
 		String ligneTemp = "";
-		ligneTemp = chemin.get(chemin.size()-1).ligne;
+		ligneTemp = chemin.get(chemin.size()-1).line;
 
-		System.out.println("De " + chemin.get(chemin.size()-1).town + " : " + chemin.get(chemin.size()-1).ligne);
+		System.out.println("De " + chemin.get(chemin.size()-1).town + " : " + chemin.get(chemin.size()-1).line);
 		for(int i = chemin.size()-1 ; i >= 0  ; i--)
 		{
-			if(!ligneTemp.equals(chemin.get(i).ligne))
+			if(!ligneTemp.equals(chemin.get(i).line))
 			{
-				System.out.println(" jusqua : " + chemin.get(i).town);
+				System.out.println(" jusqua : " + chemin.get(i+1).town);
 
-				System.out.println("De " + chemin.get(i).town + " : " + chemin.get(i).ligne);
+				System.out.println("De " + chemin.get(i+1).town + " : " + chemin.get(i).line);
 			}
-			ligneTemp = chemin.get(i).ligne;
+			ligneTemp = chemin.get(i).line;
 		}
 		
 		System.out.println(" jusqua : " + chemin.get(0).town);
-		
-		//System.out.println(g.node.get("Chatelet").town);
-		/*for(int i = 0 ; i < g.node.get("La Courneuve-Aubervilliers").getRelations().size() ; i++)
-		{
-			System.out.println(g.node.get("La Courneuve-Aubervilliers").getRelations().get(i).getStartNode().town + " => " + g.node.get("La Courneuve-Aubervilliers").getRelations().get(i).getEndNode().town);
-		}*/
-		
-		//g.findRoute("","");
-		//g.Dijkstra(g.node,"A","J");
-		// g.Trouve_min(g.node,"C","J");
-		// g.findRoute("Lyon","Nice");
-		
-		//Parse parse = new Parse();
-		//Graph g = parse.getGraph();
-		//g.findRoute("","");
 	}
+
 
 }

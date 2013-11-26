@@ -1,7 +1,10 @@
 package algo.graph.graphic;
 
+import java.awt.BorderLayout;
 import java.awt.Color;
+import java.awt.Component;
 import java.awt.Dimension;
+import java.awt.FlowLayout;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.GridLayout;
@@ -15,6 +18,7 @@ import java.util.Date;
 import java.util.List;
 
 import javax.swing.BorderFactory;
+import javax.swing.BoxLayout;
 import javax.swing.ButtonGroup;
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
@@ -43,8 +47,10 @@ public class MainPage
 	public JLabel space3 = new JLabel();
 	public JLabel space4 = new JLabel();
 	public JLabel space5 = new JLabel();
+	public JLabel space6 = new JLabel();
 	
 	public JLabel modeTransport = new JLabel("Mode de transport                            ");	
+	public JLabel critere = new JLabel("Critères                                                ");	
 	public JLabel date = new JLabel("");	
 	public SwingFXWebView traceWebView = new SwingFXWebView();
 	public JTextField startTextField = new JTextField();
@@ -59,6 +65,10 @@ public class MainPage
 	JRadioButton rerButton    = new JRadioButton("RER"   , false);
 	JRadioButton metroButton = new JRadioButton("METRO", false);
 	
+	// Type travels
+	JRadioButton fastTravels   = new JRadioButton("Le plus rapide"  , true);
+	JRadioButton lessChangeTravels    = new JRadioButton("Le moins de correspondance"   , false);
+	
 	public JScrollPane pc = new JScrollPane();
 	
 	public GridBagLayout gbl = new GridBagLayout();
@@ -70,12 +80,13 @@ public class MainPage
 	public static String imgHTMLTransport = "";
 	
 	public static String typeTransport = "";
+	public static String critereTransport = "";
 	
 	public MainPage()
 	{		
 		f.setTitle("Algo Graph");
-		f.setSize(550, 130);
-		f.setResizable(false);
+		f.setSize(550, 200);
+		//f.setResizable(false);
 		f.setIconImage(imageApp);
 		f.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		f.setLocationRelativeTo(null);
@@ -96,6 +107,7 @@ public class MainPage
 		space3.setPreferredSize(new Dimension(5,10));
 		space4.setPreferredSize(new Dimension(5,10));
 		space5.setPreferredSize(new Dimension(5,10));
+		space6.setPreferredSize(new Dimension(50,10));
 		
 		searchButton.setPreferredSize(new Dimension(105,20));
 		searchButton.setBackground(Color.white);
@@ -157,6 +169,27 @@ public class MainPage
 		gbc.gridheight = 1;
 		f.add(radioPanel, gbc);
 		
+		ButtonGroup groupTypeTravel = new ButtonGroup();
+		groupTypeTravel.add(fastTravels);
+		groupTypeTravel.add(lessChangeTravels);
+		
+		JPanel radioPanelTravel = new JPanel();
+		radioPanelTravel.setLayout(new BorderLayout());
+		radioPanelTravel.add(fastTravels,BorderLayout.NORTH);
+		radioPanelTravel.add(lessChangeTravels,BorderLayout.SOUTH);
+		
+		gbc.gridx = 0;
+		gbc.gridy = 9;
+		gbc.gridwidth = 1;
+		gbc.gridheight = 1;
+		f.add(critere, gbc);
+		
+		gbc.gridx = 0;
+		gbc.gridy = 10;
+		gbc.gridwidth = 1;
+		gbc.gridheight = 1;
+		f.add(radioPanelTravel, gbc);
+		
 		gbc.gridx = 0;
 		gbc.gridy = 7;
 		gbc.gridwidth = 1;
@@ -164,7 +197,7 @@ public class MainPage
 		f.add(modeTransport, gbc);
 		
 		gbc.gridx = 0;
-		gbc.gridy = 9;
+		gbc.gridy = 11;
 		gbc.gridwidth = 1;
 		gbc.gridheight = 1;
 		f.add(date, gbc);
@@ -203,12 +236,18 @@ public class MainPage
 			if(metroButton.isSelected())
 				typeTransport = "METRO";
 			
-			f.setSize(550, 750);
+			if(fastTravels.isSelected())
+				critereTransport = "FAST";
+			
+			if(lessChangeTravels.isSelected())
+				critereTransport = "CORRESPONDANCE";
+			
+			f.setSize(570, 850);
 			f.setLocationRelativeTo(null);
-			List<Node> chemin = g.Dijkstra(g.node,startTextField.getText(),endTextField.getText(),typeTransport);
+			List<Node> chemin = g.Dijkstra(g.node,startTextField.getText(),endTextField.getText(),typeTransport,critereTransport);
 			
 			String ligne = "";
-			for(int i = chemin.size()-1 ; i >= 0  ; i--)
+			/*for(int i = chemin.size()-1 ; i >= 0  ; i--)
 			{
 				if(i != 0)
 				{
@@ -226,11 +265,11 @@ public class MainPage
 				{
 					chemin.get(i).ligne = ligne;
 				}
-			}
+			}*/
 			
 			String messageDisplay = "";
 			String ligneTemp = "";
-			ligneTemp = chemin.get(chemin.size()-1).ligne;
+			ligneTemp = chemin.get(chemin.size()-1).line;
 			
 			String optionsInitMap = "var latlng = new google.maps.LatLng(" + g.node.get(chemin.get(chemin.size()-1).town).latitude + "," + g.node.get(chemin.get(chemin.size()-1).town).longitude + "); var options = {center: latlng,zoom: 13,mapTypeId: google.maps.MapTypeId.ROADMAP};";
 			String initMap = "var carte = new google.maps.Map(document.getElementById('mapcanvas'), options);";
@@ -261,10 +300,10 @@ public class MainPage
 			
 			String parcourt = "var parcours = [ new google.maps.LatLng(" + g.node.get(chemin.get(chemin.size()-1).town).latitude + "," + g.node.get(chemin.get(chemin.size()-1).town).longitude + "),";
 			
-			messageDisplay += "De " + chemin.get(chemin.size()-1).town + " : " + chemin.get(chemin.size()-1).ligne;
+			messageDisplay += "De " + chemin.get(chemin.size()-1).town + " : " + chemin.get(chemin.size()-1).line;
 			
 			displayParcourt += "<TR> <TD>" + MainPage.imgHTMLTransport + MainPage.imgLigne + "</TD> <TD> depuis <strong>" + chemin.get(chemin.size()-1).town +"</strong><br/>"; 
-			System.out.println("De " + chemin.get(chemin.size()-1).town + " : " + chemin.get(chemin.size()-1).ligne);
+			System.out.println("De " + chemin.get(chemin.size()-1).town + " : " + chemin.get(chemin.size()-1).line);
 			
 			int weightTotal = 0;
 			int W = 0;
@@ -274,29 +313,29 @@ public class MainPage
 			
 			for(int i = chemin.size()-1 ; i >= 0  ; i--)
 			{
-				if(!ligneTemp.equals(chemin.get(i).ligne))
+				if(!ligneTemp.equals(chemin.get(i).line))
 				{
 					System.out.println("Weight aux changements : " + weight);
 					weightTotal += weight;
-					displayParcourt += "jusqu'a <strong>" + chemin.get(i).town +"</strong></TD> <TD>" + lastHeureTemp + "h" + lastminuteTemp +  "<br>" + heureTemp + "h" + minuteTemp + "</TD> <TD>" + weight + "min </TD> </TR>";
+					displayParcourt += "jusqu'a <strong>" + chemin.get(i+1).town +"</strong></TD> <TD>" + lastHeureTemp + "h" + lastminuteTemp +  "<br>" + heureTemp + "h" + minuteTemp + "</TD> <TD>" + weight + "min </TD> </TR>";
 					
 					weight = 0;
 					lastHeureTemp = heureTemp;
 					lastminuteTemp = minuteTemp;
 							
-					System.out.println(" jusqua : " + chemin.get(i).town);
+					System.out.println(" jusqua : " + chemin.get(i+1).town);
 					
 					refreshImg(g,chemin,i);
 					
-					marqueur += "var marqueur = new google.maps.Marker({position: new google.maps.LatLng(" + g.node.get(chemin.get(i).town).latitude + "," + g.node.get(chemin.get(i).town).longitude + "),map: carte,title: '" + g.node.get(chemin.get(i).town).town.replace("-"," ").replace("'","'\\")  + "'," + MainPage.imgTransport + "}); attacherMessageSecret(marqueur, marqueur.title);";
+					marqueur += "var marqueur = new google.maps.Marker({position: new google.maps.LatLng(" + g.node.get(chemin.get(i).town).latitude + "," + g.node.get(chemin.get(i).town).longitude + "),map: carte,title: '" + g.node.get(chemin.get(i+1).town).town.replace("-"," ").replace("'","'\\")  + "'," + MainPage.imgTransport + "}); attacherMessageSecret(marqueur, marqueur.title);";
 					parcourt += "new google.maps.LatLng(" + g.node.get(chemin.get(i).town).latitude + "," + g.node.get(chemin.get(i).town).longitude + "),";
-					messageDisplay += "De " + chemin.get(i).town + " : " + chemin.get(i).ligne;
+					messageDisplay += "De " + chemin.get(i).town + " : " + chemin.get(i).line;
 					
-					displayParcourt += "<TR> <TD>"+ MainPage.imgHTMLTransport + MainPage.imgLigne + "</TD> <TD> depuis <strong>" + chemin.get(i).town +"</strong><br/>";
-					System.out.println("De " + chemin.get(i).town + " : " + chemin.get(i).ligne);
+					displayParcourt += "<TR> <TD>"+ MainPage.imgHTMLTransport + MainPage.imgLigne + "</TD> <TD> depuis <strong>" + chemin.get(i+1).town +"</strong><br/>";
+					System.out.println("De " + chemin.get(i+1).town + " : " + chemin.get(i).line);
 				}
 				
-				ligneTemp = chemin.get(i).ligne;
+				ligneTemp = chemin.get(i).line;
 				
 				if(i != 0 && i != chemin.size()-1)
 				{
@@ -317,8 +356,8 @@ public class MainPage
 						}
 					}
 					
-					System.out.println("Distance entre " + chemin.get(i) + " � " + chemin.get(i-1) + " : " + W);			
-					System.out.println("Valeur de Weight : " + weight);
+					//System.out.println("Distance entre " + chemin.get(i) + " � " + chemin.get(i-1) + " : " + W);			
+					//System.out.println("Valeur de Weight : " + weight);
 				}
 			}
 			
@@ -342,13 +381,13 @@ public class MainPage
 			System.out.println("Cheminement : " + cheminement);
 
 			gbc.gridx = 0;
-			gbc.gridy = 9;
+			gbc.gridy = 11;
 			gbc.gridwidth = 1;
 			gbc.gridheight = 1;
 			f.add(space4, gbc);
 			
 			gbc.gridx = 0;
-			gbc.gridy = 7;
+			gbc.gridy = 9;
 			gbc.gridwidth = 1;
 			gbc.gridheight = 1;
 			f.add(space3, gbc);
@@ -385,13 +424,13 @@ public class MainPage
 			pc.setPreferredSize(new Dimension(530, 220));
 			
 			gbc.gridx = 0;
-			gbc.gridy = 10;
+			gbc.gridy = 12;
 			gbc.gridwidth = 5;
 			gbc.gridheight = 4;
 			f.add(pc, gbc);
 			
 			gbc.gridx = 0;
-			gbc.gridy = 15;
+			gbc.gridy = 17;
 			gbc.gridwidth = 1;
 			gbc.gridheight = 1;
 			f.add(space5, gbc);
@@ -405,7 +444,7 @@ public class MainPage
 			webView.setBackground(Color.decode("#EEEEEE"));
 			
 			gbc.gridx = 0;
-			gbc.gridy = 16;
+			gbc.gridy = 18;
 			gbc.gridwidth = 5;
 			gbc.gridheight = 4;
 			f.add(webView, gbc);
@@ -419,12 +458,12 @@ public class MainPage
 	
 	public static void refreshImg(Graph g,List<Node> chemin,int i)
 	{
-		if(g.node.get(chemin.get(i).town).ligne.contains("T"))
+		if(g.node.get(chemin.get(i).town).line.contains("T"))
 		{
 			imgTransport = "icon:imageTram";
 			
 			imgHTMLTransport = "<img src='logo_ratp/tramway.png'>";
-			switch(g.node.get(chemin.get(i).town).ligne)
+			switch(g.node.get(chemin.get(i).town).line)
 			{
 				case "T1":
 					imgLigne = "<img src='logo_ratp/tramway_1.png'>";
@@ -436,12 +475,12 @@ public class MainPage
 			}
 		}
 		
-		if(g.node.get(chemin.get(i).town).ligne.equals("A") || g.node.get(chemin.get(i).town).ligne.equals("B"))
+		if(g.node.get(chemin.get(i).town).line.equals("A") || g.node.get(chemin.get(i).town).line.equals("B"))
 		{
 			imgTransport = "icon:imageRER";
 			
 			imgHTMLTransport = "<img src='logo_ratp/rer.png'>";
-			switch(g.node.get(chemin.get(i).town).ligne)
+			switch(g.node.get(chemin.get(i).town).line)
 			{
 				case "A":
 					imgLigne = "<img src='logo_ratp/rera.png'>";
@@ -455,11 +494,11 @@ public class MainPage
 		
 		else
 		{
-			System.out.println("METRO : " + g.node.get(chemin.get(i).town).ligne) ;
+			System.out.println("METRO : " + g.node.get(chemin.get(i).town).line) ;
 			imgTransport = "icon:imageMetro";
 			
 			imgHTMLTransport = "<img src='logo_ratp/metro.png'>";
-			switch(g.node.get(chemin.get(i).town).ligne)
+			switch(g.node.get(chemin.get(i).town).line)
 			{
 				case "1":
 					imgLigne = "<img src='logo_ratp/ligne_metro1.png'>";
@@ -519,6 +558,10 @@ public class MainPage
 					
 				case "13":
 					imgLigne = "<img src='logo_ratp/ligne_metro13.png'>";
+					break;	
+					
+				case "14":
+					imgLigne = "<img src='logo_ratp/ligne_metro14.png'>";
 					break;	
 			}
 		}
