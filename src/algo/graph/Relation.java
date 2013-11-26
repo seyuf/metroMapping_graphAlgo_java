@@ -7,7 +7,7 @@ public class Relation implements IRelation
 {
 	private Node nodeEnd;
 	private Node nodeStart;
-	private int weight;
+	public int weight;
 	public String ligneTransport;
 	public String modeTransport;
 	
