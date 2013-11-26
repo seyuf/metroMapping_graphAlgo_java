@@ -277,7 +277,6 @@ public class Graph implements IGraph
 		Parse parse = new Parse();
 		Graph g = parse.getGraph();
 		
-		
 		 /*for(String ville : g.node.keySet())
 		 {
 			 if(g.getRelation(ville) > 1)
@@ -294,7 +293,6 @@ public class Graph implements IGraph
 		// List<Node> chemin = g.Dijkstra(g.node,"Balard","Pointe du Lac","TOUS","OK");
 		
 		//List<Node> chemin = g.Test(g.node,"La Courneuve-8-Mai-1945","Buttes-Chaumont");
-		String ligne = "";
 		/*for(int i = chemin.size()-1 ; i >= 0  ; i--)
 		{
 			if(i != 0)

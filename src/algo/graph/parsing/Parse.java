@@ -1,10 +1,20 @@
 package algo.graph.parsing;
 
+import hibernateLocal.HibernateSession;
+
 import java.io.BufferedReader;
 import java.io.FileInputStream;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.util.ArrayList;
+import java.util.Collection;
+
+import org.onebusaway.gtfs.model.Route;
+import org.onebusaway.gtfs.model.Stop;
+import org.onebusaway.gtfs.model.StopTime;
+import org.onebusaway.gtfs.model.Trip;
+import org.onebusaway.gtfs.services.GtfsMutableRelationalDao;
+import org.onebusaway.gtfs.services.HibernateGtfsFactory;
 
 import algo.graph.Graph;
 
@@ -23,40 +33,49 @@ public class Parse
 		
 	}
 	
+	public String getTransportation(int type){
+		if(type == 1)
+			return "METRO";
+		else if(type == 2)
+			return "RER";
+		else if(type == 3)
+			return "BUS";
+		else if (type == 0)
+			return "TRAM";
+		else
+			return "NONE";
+
+		
+	}
 	public Graph getGraph()
 	{
 		// Cr�ation du Graph a retourner
 		try
 		{
-			// Chargement du fichier permettant de r�cup�rer toutes les routes du r�seaux RATP/SNCF
-			String fichierRoutes ="routes.txt";
-			InputStream ips = new FileInputStream(fichierRoutes); 
-			InputStreamReader ipsr = new InputStreamReader(ips);
-			BufferedReader br = new BufferedReader(ipsr);
-			String ligneRoutes;
-			String numTrips_ID = "";
-			
-			br.readLine();
-			String modeTransport = "";
-			
-			while ((ligneRoutes = br.readLine()) != null)
-			{
-				String [] splitRoutes = ligneRoutes.split(",");
-				
-				if(splitRoutes[2].contains("T"))
-					modeTransport = "TRAM";
-				
-				if(splitRoutes[2].equals("A") || splitRoutes[2].equals("B"))
-					modeTransport = "RER";
-				
-				else
-					modeTransport = "METRO";
-				
-				// Traitement mode de transport
-				routes.add(new Routes(splitRoutes[0],splitRoutes[2],modeTransport));		
-			}
-			br.close();
-			
+		
+		    HibernateSession hyber = new HibernateSession();
+		    HibernateGtfsFactory factory =  hyber.createHibernateGtfsFactory();
+		    GtfsMutableRelationalDao dao = factory.getDao();
+		    
+		    /** fill routes **/
+		    Collection<Route> routesDB = dao.getAllRoutes();
+		    for( Route route: routesDB){
+		    	routes.add(new Routes(route.getId().getId(), route.getShortName(),getTransportation(route.getType())));
+		    }
+		    
+		    /** fill stops **/
+		    Collection<Stop> stopsDB = dao.getAllStops();
+		    for( Stop stop: stopsDB){
+		    	
+		    	stops.add(new Stops(stop.getId().getId(), stop.getName(),
+		    			Double.toString(stop.getLat()), Double.toString(stop.getLon()), stop.getParentStation()));
+		    	//StopTime stopTime = dao.getStopTimeForId(Integer.parseInt(stop.getId().getId()));
+		    	//stop_times.add( new StopTimes(stopTime.getTrip().getId().getId(),
+		    		//	stopTime.getStop().getId().getId(),Integer.toString( stopTime.getArrivalTime())));
+		    	
+		    }
+		    
+		    
 			// Chargement du fichier permettant de r�cup�rer les correspondances et les d�lais entre les stations 
 			String fichierStop_Times = "stop_times.txt";
 			InputStream ipsStop_Times = new FileInputStream(fichierStop_Times); 
@@ -73,37 +92,27 @@ public class Parse
 			
 			brStop_Times.close();
 			
-			// Parcourt du fichier permettant de recup�rer les chemins des diff�rentes lignes du reseau
-			String fichierTrips = "trips.txt";
-			InputStream ipsTrips = new FileInputStream(fichierTrips); 
-			InputStreamReader ipsrTrips = new InputStreamReader(ipsTrips);
-			BufferedReader brTrips = new BufferedReader(ipsrTrips);
 			
-			String ligneTrips;
-			brTrips.readLine();
-			while ((ligneTrips = brTrips.readLine()) != null)
-			{
-				String [] splitTrips = ligneTrips.split(",");
-				trips.add(new Trips(splitTrips[0],splitTrips[2]));
-			}
-			brTrips.close();
+			/*** fill stop times *****/
+			/* fill stops 
+		    Collection<StopTime> stopTimesDB = dao.getAllStopTimes();
+		    for( StopTime stopTime: stopTimesDB){
+		    	
+		    	stop_times.add( new StopTimes(stopTime.getTrip().getId().getId(),
+		    			stopTime.getStop().getId().getId(),Integer.toString( stopTime.getDepartureTime())));
+		    	
+		    }
+		    */
 			
+			
+			/* fill trips **/
+			 Collection<Trip> tripsDB = dao.getAllTrips();
+			    for( Trip trip: tripsDB){
+			    	trips.add(new Trips(trip.getRoute().getId().getId(), trip.getId().getId()));
+			    	
+			    }
 
-			// Parcourt du fichier permettant de recup�rer les chemins des diff�rentes lignes du reseau
-			String fichierStops = "stops.txt";
-			InputStream ipsStops = new FileInputStream(fichierStops); 
-			InputStreamReader ipsrStops = new InputStreamReader(ipsStops);
-			BufferedReader brStops = new BufferedReader(ipsrStops);
-			
-			String ligneStops;
-			brStops.readLine();
-			while ((ligneStops = brStops.readLine()) != null)
-			{
-				String [] splitStops = ligneStops.split(",");
-				stops.add(new Stops(splitStops[0],splitStops[2],splitStops[3],splitStops[4],splitStops[7]));
-			}
-			brStops.close();
-			
+		
 			
 			String fichierGeo= "geo.csv";
 			InputStream ipsGeo = new FileInputStream(fichierGeo); 

@@ -1,4 +1,4 @@
-package hibernate_handling;
+package hibernateLocal;
 
 
 import java.io.File;
