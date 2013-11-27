@@ -6,7 +6,6 @@ public interface IRelation
 	public Node getStartNode();
 	public Node getEndNode();
 	public int getWeight();
-	public void setWeight(int w);
 	public String getmodeTransport();
 	public void setStartNode(Node nodeStart);
 	public void setEndNode(Node nodeEnd);

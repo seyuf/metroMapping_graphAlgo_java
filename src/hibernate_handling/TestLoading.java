@@ -5,13 +5,10 @@ import java.io.File;
 import java.io.IOException;
 import java.util.Collection;
 import java.util.Set;
-
 import org.hibernate.SessionFactory;
 import org.hibernate.cfg.Configuration;
 import org.onebusaway.gtfs.model.AgencyAndId;
-import org.onebusaway.gtfs.model.Route;
 import org.onebusaway.gtfs.model.Stop;
-import org.onebusaway.gtfs.model.StopTime;
 import org.onebusaway.gtfs.model.calendar.ServiceDate;
 import org.onebusaway.gtfs.serialization.GtfsReader;
 import org.onebusaway.gtfs.services.GtfsMutableRelationalDao;
@@ -27,12 +24,10 @@ public class TestLoading {
 
 	  private static final String KEY_FILE = "file:";
 
-	  public static void main(String[] args) throws IOException 
-	  {
+	  public static void main(String[] args) throws IOException {
 		  /*
 
-	    if (!(args.length == 1 || args.length == 2)) 
-	    {
+	    if (!(args.length == 1 || args.length == 2)) {
 	      System.err.println("usage: gtfsPath [hibernate-config.xml]");
 	      System.exit(-1);
 	    }
@@ -45,40 +40,34 @@ public class TestLoading {
 	      //resource = args[1];
 
 	    HibernateGtfsFactory factory = createHibernateGtfsFactory(resource);
-	    
+
 	    GtfsReader reader = new GtfsReader();
 	    reader.setInputLocation(new File(gtfsFiles));
 
 	    GtfsMutableRelationalDao dao = factory.getDao();
 	    reader.setEntityStore(dao);
-	    //reader.run();
+	    reader.run();
 
 	    Collection<Stop> stops = dao.getAllStops();
-	    Collection<Route> routes = dao.getAllRoutes();
-	    Collection<StopTime> stopTime = dao.getAllStopTimes();
-	    
-	    // System.out.println("OKKK");
-	    // dao.getALLS
 
 	    for (Stop stop : stops)
 	      System.out.println(stop.getName());
 
-	    /*CalendarService calendarService = factory.getCalendarService();
+	    CalendarService calendarService = factory.getCalendarService();
 	    Set<AgencyAndId> serviceIds = calendarService.getServiceIds();
 
-	    for(AgencyAndId serviceId : serviceIds) {
+	    for (AgencyAndId serviceId : serviceIds) {
 	      Set<ServiceDate> dates = calendarService.getServiceDatesForServiceId(serviceId);
 	      ServiceDate from = null;
 	      ServiceDate to = null;
-	      for(ServiceDate date : dates)
-	      {
+	      for (ServiceDate date : dates) {
 	        from = min(from, date);
 	        to = max(to, date);
 	      }
 
 	      System.out.println("serviceId=" + serviceId + " from=" + from + " to="
 	          + to);
-	    }*/
+	    }
 	  }
 
 	  private static ServiceDate min(ServiceDate a, ServiceDate b) {
