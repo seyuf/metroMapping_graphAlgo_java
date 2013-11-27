@@ -104,7 +104,7 @@ public class Parse
 			}
 			brStops.close();
 			
-			/*
+			
 			String fichierGeo= "geo.csv";
 			InputStream ipsGeo = new FileInputStream(fichierGeo); 
 			InputStreamReader ipsrGeo = new InputStreamReader(ipsGeo);
@@ -118,7 +118,7 @@ public class Parse
 				coordonneesStops.add(new Geo(splitGeo[0],splitGeo[1],splitGeo[2]));
 			}
 			brGeo.close();
-			*/
+			
 
 			for(int i = 0 ; i < stops.size() ; i++)
 			{
