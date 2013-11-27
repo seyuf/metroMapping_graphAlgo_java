@@ -7,7 +7,6 @@ public class Stops
 	public String stop_lat;
 	public String stop_long;
 	public String parent;
-	public String nameLigne;
 	
 	public Stops(String id,String name,String lat,String lon,String paren)
 	{
@@ -16,6 +15,6 @@ public class Stops
 		stop_lat = lat;
 		stop_long = lon;
 		parent = paren;
-		nameLigne = "";
 	}
+
 }

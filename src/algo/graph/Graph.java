@@ -150,31 +150,6 @@ public class Graph implements IGraph
 						{
 							graph.get(n1.town).getRelations().get(i).getEndNode().poids = graph.get(n1.town).getRelations().get(i).getStartNode().poids + Poids(graph.get(n1.town).getRelations().get(i).getStartNode(),graph.get(n1.town).getRelations().get(i).getEndNode());
 							graph.get(n1.town).getRelations().get(i).getEndNode().nodePrecedent = graph.get(n1.town).getRelations().get(i).getStartNode();
-						
-							try
-							{
-								graph.get(n1.town).getRelations().get(i).getEndNode().ligne = graph.get(n1.town).getRelations().get(i).getmodeTransport();
-								
-								// System.out.println("Ligne : " + graph.get(n1.town).getRelations().get(i).getLigneTransport());
-								if(graph.get(n1.town).getRelations().get(i).getStartNode().ligne != null)
-								{
-									if(!graph.get(n1.town).getRelations().get(i).getStartNode().ligne.equalsIgnoreCase(graph.get(n1.town).getRelations().get(i).getEndNode().ligne))
-									{
-										/*if(graph.get(n1.town).getRelations().get(i).getEndNode().town.equals("Chatelet"))
-										{
-											System.out.println("Start node : " + graph.get(n1.town).getRelations().get(i).getStartNode().town);
-											System.out.println("End node : " + graph.get(n1.town).getRelations().get(i).getEndNode().town);
-										}*/
-										
-										// graph.get(n1.town).getRelations().get(i).setWeight(graph.get(n1.town).getRelations().get(i).getWeight() + 5);
-										graph.get(n1.town).getRelations().get(i).getEndNode().poids += 5;
-									}
-								}
-							}
-							catch(Exception E)
-							{
-								
-							}
 						}
 					}
 				}
@@ -248,7 +223,7 @@ public class Graph implements IGraph
 		Parse parse = new Parse();
 		Graph g = parse.getGraph();
 		
-		List<Node> chemin = g.Dijkstra(g.node,"La Courneuve-8-Mai-1945","Buttes-Chaumont","TOUS");
+		List<Node> chemin = g.Dijkstra(g.node,"La Courneuve-Aubervilliers","La Courneuve-8-Mai-1945","TOUS");
 		
 		String ligne = "";
 		for(int i = chemin.size()-1 ; i >= 0  ; i--)
