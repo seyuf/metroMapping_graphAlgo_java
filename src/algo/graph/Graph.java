@@ -77,7 +77,7 @@ public class Graph implements IGraph
 		{
 			if(!ville.equals(depart.town))
 			{
-				node.get(ville).poids = 9999999;
+				node.get(ville).poids = Integer.MAX_VALUE;
 				node.get(ville).nodePrecedent = null;
 			}
 		}
@@ -223,7 +223,7 @@ public class Graph implements IGraph
 		Parse parse = new Parse();
 		Graph g = parse.getGraph();
 		
-		List<Node> chemin = g.Dijkstra(g.node,"La Courneuve-Aubervilliers","La Courneuve-8-Mai-1945","TOUS");
+		List<Node> chemin = g.Dijkstra(g.node,"Châtelet","Solférino","TOUS");
 		
 		String ligne = "";
 		for(int i = chemin.size()-1 ; i >= 0  ; i--)
