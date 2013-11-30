@@ -249,7 +249,7 @@ public class Graph implements IGraph
 		Graph g = parse.getGraph();
 		
 		List<Node> chemin = g.Dijkstra(g.node,"La Courneuve-8-Mai-1945","Buttes-Chaumont","TOUS");
-		
+		//List<Node> chemin = g.Dijkstra(g.node,"Jourdain","Buttes-Chaumont","TOUS");
 		String ligne = "";
 		for(int i = chemin.size()-1 ; i >= 0  ; i--)
 		{
