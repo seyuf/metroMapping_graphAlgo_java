@@ -16,9 +16,11 @@ public class Node implements INode, Serializable
 	private List<IRelation> relation;
 	public String town;
 	public Node previousNode;
+	public Node came_from;
 	public String latitude;
 	public String longitude;
 	public Integer weight;
+	public Integer heuristic;
 	public String line;
 	
 	public Node()

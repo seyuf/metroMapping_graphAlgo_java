@@ -14,6 +14,7 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
+import java.io.IOException;
 import java.util.Date;
 import java.util.List;
 
@@ -24,11 +25,13 @@ import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
+import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JRadioButton;
 import javax.swing.JScrollPane;
 import javax.swing.JTextField;
 
+import serialize.GraphSerialized;
 import algo.graph.Graph;
 import algo.graph.Node;
 import algo.graph.SwingFXWebView;
@@ -57,8 +60,8 @@ public class MainPage
 	public JTextField endTextField = new JTextField();
 	public JLabel permutJLabel = new JLabel(new ImageIcon("src/LeftRight.png"));
 	public JButton searchButton = new JButton("Rechercher");
-	public Parse parse = new Parse();
-	public Graph g = parse.getGraph();
+	//public Parse parse = new Parse();
+	public Graph g; // = parse.getGraph();
 	
 	// Mode de transport
 	JRadioButton allButton   = new JRadioButton("TOUS"  , true);
@@ -67,7 +70,8 @@ public class MainPage
 	
 	// Type travels
 	JRadioButton fastTravels   = new JRadioButton("Le plus rapide"  , true);
-	JRadioButton lessChangeTravels    = new JRadioButton("Le moins de correspondance"   , false);
+	JRadioButton lessChangeTravels    = new JRadioButton("Le moins de correspondance     "   , false);
+	JRadioButton astar    = new JRadioButton("A Star                                                "   , false);
 	
 	public JScrollPane pc = new JScrollPane();
 	
@@ -85,16 +89,25 @@ public class MainPage
 	public MainPage()
 	{		
 		f.setTitle("Algo Graph");
-		f.setSize(550, 200);
-		//f.setResizable(false);
+		f.setSize(550, 220);
 		f.setIconImage(imageApp);
 		f.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		f.setLocationRelativeTo(null);
+		f.setResizable(false);
 		f.setVisible(true);
-				
+		
+		GraphSerialized deserialized  = null;
+		try {
+			deserialized = GraphSerialized.deSerialise("ressources/graph") ;
+		} catch (IOException e1) {
+			// TODO Auto-generated catch block
+			JOptionPane.showMessageDialog(null,"failed to load the graph");
+		}
+		g = deserialized.getSerializedGraph();
+						
 		// JTextField AutoComplete
-		startTextField = AutoCompleteDocument.createAutoCompleteTextField(Parse.stops);
-		endTextField = AutoCompleteDocument.createAutoCompleteTextField(Parse.stops);
+		startTextField = AutoCompleteDocument.createAutoCompleteTextField(g.stops);
+		endTextField = AutoCompleteDocument.createAutoCompleteTextField(g.stops);
 			
 		// SIZE
 		startTextField.setPreferredSize(new Dimension(180, 20));
@@ -176,7 +189,8 @@ public class MainPage
 		JPanel radioPanelTravel = new JPanel();
 		radioPanelTravel.setLayout(new BorderLayout());
 		radioPanelTravel.add(fastTravels,BorderLayout.NORTH);
-		radioPanelTravel.add(lessChangeTravels,BorderLayout.SOUTH);
+		radioPanelTravel.add(astar,BorderLayout.SOUTH);
+		radioPanelTravel.add(lessChangeTravels,BorderLayout.LINE_END);
 		
 		gbc.gridx = 0;
 		gbc.gridy = 9;
@@ -244,6 +258,7 @@ public class MainPage
 			
 			f.setSize(570, 850);
 			f.setLocationRelativeTo(null);
+			f.setResizable(false);
 			List<Node> chemin = g.Dijkstra(g.node,startTextField.getText(),endTextField.getText(),typeTransport,critereTransport);
 			
 			String ligne = "";

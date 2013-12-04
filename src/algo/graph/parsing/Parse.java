@@ -70,6 +70,9 @@ public class Parse
 		    	
 		    	stops.add(new Stops(stop.getId().getId(), stop.getName(),
 		    			Double.toString(stop.getLat()), Double.toString(stop.getLon()), stop.getParentStation()));
+		    	
+		    	//g.stops.add(new Stops(stop.getId().getId(), stop.getName(),
+		    		//	Double.toString(stop.getLat()), Double.toString(stop.getLon()), stop.getParentStation()));
 		    	//StopTime stopTime = dao.getStopTimeForId(Integer.parseInt(stop.getId().getId()));
 		    	//stop_times.add( new StopTimes(stopTime.getTrip().getId().getId(),
 		    			//stopTime.getStop().getId().getId(),Integer.toString( stopTime.getDepartureTime())));
@@ -109,22 +112,27 @@ public class Parse
 			    	
 			    }
 
-		
-			
-			    /*
-			String fichierGeo= "geo.csv";
-			InputStream ipsGeo = new FileInputStream(fichierGeo); 
-			InputStreamReader ipsrGeo = new InputStreamReader(ipsGeo);
-			BufferedReader brGeo = new BufferedReader(ipsrGeo);
-			
-			String ligneGeo;
-			brGeo.readLine();
-			while ((ligneGeo = brGeo.readLine()) != null)
-			{
-				String [] splitGeo = ligneGeo.split("#");
-				coordonneesStops.add(new Geo(splitGeo[0],splitGeo[1],splitGeo[2]));
-			}
-			brGeo.close();
+			    
+			    try
+			    {
+					String fichierGeo= "geo.csv";
+					InputStream ipsGeo = new FileInputStream(fichierGeo); 
+					InputStreamReader ipsrGeo = new InputStreamReader(ipsGeo);
+					BufferedReader brGeo = new BufferedReader(ipsrGeo);
+					
+					String ligneGeo;
+					brGeo.readLine();
+					while ((ligneGeo = brGeo.readLine()) != null)
+					{
+						String [] splitGeo = ligneGeo.split("#");
+						coordonneesStops.add(new Geo(splitGeo[0],splitGeo[1],splitGeo[2]));
+					}
+					brGeo.close();
+			    }
+			    catch(Exception E)
+			    {
+			    	
+			    }
 			
 
 			for(int i = 0 ; i < stops.size() ; i++)
@@ -139,10 +147,6 @@ public class Parse
 				}
 			}
 			
-			/* System.out.println("Nombre de routes : " + routes.size());
-			System.out.println("Nombre de Stop times : " + stop_times.size());
-			System.out.println("Nombre de trips : " + trips.size());
-			System.out.println("Nombre d'arr�t : " + stops.size()); */
 			
 			System.out.println("Parsing termin�");
 			System.out.println("");
@@ -224,9 +228,8 @@ public class Parse
 				}
 				
 				relationString.clear();}
-				
+				g.stops = stops;
 			
-
 			System.out.println("graph filled");
 			
 			// serialise the graph

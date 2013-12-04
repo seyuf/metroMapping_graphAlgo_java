@@ -1,7 +1,15 @@
 package algo.graph.parsing;
 
-public class Stops 
+import java.io.Serializable;
+
+import algo.graph.interfaces.IGraph;
+
+public class Stops implements Serializable
 {
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
 	public String stop_id;
 	public String stop_name;
 	public String stop_lat;
