@@ -50,8 +50,7 @@ public class Parse
 	public Graph getGraph()
 	{
 		// Cr�ation du Graph a retourner
-		try
-		{
+		
 		
 		    HibernateSession hyber = new HibernateSession();
 		    HibernateGtfsFactory factory =  hyber.createHibernateGtfsFactory();
@@ -63,7 +62,7 @@ public class Parse
 		    	routes.add(new Routes(route.getId().getId(), route.getShortName(),getTransportation(route.getType())));
 		    }
 		    
-		    /** fill stops **/
+		    /* fill stops */
 		    Collection<Stop> stopsDB = dao.getAllStops();
 		    for( Stop stop: stopsDB){
 		    	
@@ -71,13 +70,15 @@ public class Parse
 		    			Double.toString(stop.getLat()), Double.toString(stop.getLon()), stop.getParentStation()));
 		    	//StopTime stopTime = dao.getStopTimeForId(Integer.parseInt(stop.getId().getId()));
 		    	//stop_times.add( new StopTimes(stopTime.getTrip().getId().getId(),
-		    		//	stopTime.getStop().getId().getId(),Integer.toString( stopTime.getArrivalTime())));
+		    			//stopTime.getStop().getId().getId(),Integer.toString( stopTime.getDepartureTime())));
 		    	
 		    }
+		   
 		    
 		    
 			// Chargement du fichier permettant de r�cup�rer les correspondances et les d�lais entre les stations 
-			String fichierStop_Times = "stop_times.txt";
+			try{
+		    String fichierStop_Times = "stop_times.txt";
 			InputStream ipsStop_Times = new FileInputStream(fichierStop_Times); 
 			InputStreamReader ipsrStop_Times = new InputStreamReader(ipsStop_Times);
 			BufferedReader brStop_Times = new BufferedReader(ipsrStop_Times);
@@ -91,18 +92,10 @@ public class Parse
 			}
 			
 			brStop_Times.close();
+			}catch( Exception e){
+				System.out.println("no Stoptime file");
+			};
 			
-			
-			/*** fill stop times *****/
-			/* fill stops 
-		    Collection<StopTime> stopTimesDB = dao.getAllStopTimes();
-		    for( StopTime stopTime: stopTimesDB){
-		    	
-		    	stop_times.add( new StopTimes(stopTime.getTrip().getId().getId(),
-		    			stopTime.getStop().getId().getId(),Integer.toString( stopTime.getDepartureTime())));
-		    	
-		    }
-		    */
 			
 			
 			/* fill trips **/
@@ -114,6 +107,7 @@ public class Parse
 
 		
 			
+			    /*
 			String fichierGeo= "geo.csv";
 			InputStream ipsGeo = new FileInputStream(fichierGeo); 
 			InputStreamReader ipsrGeo = new InputStreamReader(ipsGeo);
@@ -149,13 +143,17 @@ public class Parse
 			System.out.println("Parsing termin�");
 			System.out.println("");
 			
+			
 			// Boucle permettant de stockers les diff�rentes correspondance
+			
 			for(Routes route : routes)
 			{
 				for(Trips trip : trips)
 				{
 					if(trip.route_id.equals(route.route_id))
+						//if((trip.getRoute().getAgency().getId()).equals(route.getI))
 					{
+						//System.out.println("routeid  "+ route.route_id+" trip "+trip.route_id);
 						for(StopTimes st : stop_times)
 						{
 							if(st.trips_id.equals(trip.trips_id))
@@ -166,12 +164,16 @@ public class Parse
 						}
 					}
 				}
+			
 				
+			
 				Stops depart = null;
 				Stops arrive = null;
-
+				
 				for(int i = 0 ; i < relationString.size() ; i++)
 				{
+					try
+					{
 					if(i < relationString.size() - 1)
 					{
 						for(Stops stop : stops)
@@ -182,6 +184,7 @@ public class Parse
 							if(stop.stop_id.equals(relationString.get(i+1).depart))
 								arrive = stop;
 						}
+					
 						
 						int hDepart =  Integer.parseInt(relationString.get(i).date.substring(0,2));	
 						int minDepart =  Integer.parseInt(relationString.get(i).date.substring(3,5));
@@ -191,20 +194,36 @@ public class Parse
 						// conversion heures et minutes => minutes
 						int mTotal1 = hDepart*60+minDepart;
 						int mTotal2 = hFinal*60+minFinal;
-						 
+						//int mTotal1 =  Integer.parseInt(relationString.get(i).date)/60;
+						//int mTotal2 = Integer.parseInt(relationString.get(i+1).date)/60;
+						 //System.out.println("1  "+mTotal1);
+						// System.out.println("2  "+mTotal2);
+
 						// calcul de l'�cart en minutes
-						int ecart = mTotal2-mTotal1;
+						int ecart =  mTotal2-mTotal1 ;
 									
 						g.addRoute(depart,arrive,ecart,relationString.get(i).modeTransport,relationString.get(i).ligne);
 					}
+					
+					}		
+					catch (Exception e){
+						
+						//System.out.println(relationString.get(i).date.substring(3,5));
+						
+						//System.out.println(relationString.get(i+1).date.substring(3,5));
+						System.out.println("toto");
+						System.out.println(relationString.get(i).date);
+						System.out.println(relationString.get(i+1).date);
+						System.out.println(e.toString());
+					}
+					
 				}
-				relationString.clear();
-			}
+				
+				relationString.clear();}
+				
+			
 
-		}		
-		catch (Exception e){
-			System.out.println(e.toString());
-		}
+			System.out.println("graph filled");
 		return g;
 	}
 }

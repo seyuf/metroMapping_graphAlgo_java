@@ -4,6 +4,8 @@ package hibernateLocal;
 import java.io.File;
 import java.io.IOException;
 import java.math.BigDecimal;
+import java.math.BigInteger;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Iterator;
 import java.util.List;
@@ -52,12 +54,97 @@ public class TestReading {
 	   //String gtfsFiles = "src/ressources/";
 	    //if (args.length == 2)
 	    //resource = args[1];
+		  // there are 99847 trips for metro
 		
 	    HibernateSession hyber = new HibernateSession();
 	    HibernateGtfsFactory factory =  hyber.createHibernateGtfsFactory();
 	    GtfsMutableRelationalDao dao = factory.getDao();
+	    //Collection<Route> routes = dao.getAllRoutes();
+	    //Collection<Trip> trips = dao.getAllTrips();
+	    Collection<Stop> stops = dao.getAllStops();
+	    for(Stop stop:stops){
+	    	int tmp = Integer.parseInt(stop.getId().getId());
+	    	int tmp1 = Integer.parseInt(stop.getId().getId())+1;
+	    	int tmp2 = Integer.parseInt(stop.getId().getId())+2;
+	    	
+	    	Stop stop1 = dao.getStopForId(new AgencyAndId("100", String.valueOf(tmp1)));
+	    	Stop stop2 = dao.getStopForId(new AgencyAndId("100", String.valueOf(tmp2)));
+	    	//System.out.println(stop.getId().getId()+"     "+stop.getName());
+	    	try{
+	    	if(!stop.getName().equals(stop1.getName())){
+	    		System.out.println(stop.getName()+"  "+stop1.getName());
+	    		
+	    		//dao.getStopTimesForStop(stop);
+	    	}
+	    	else if(!stop.getName().equals(stop2.getName())){
+	    		System.out.println(stop.getName()+"  "+stop2.getName());
+	    		
+	    	}
+	    	}catch(Exception e){
+	    		
+	    	}
+	    }
 	    
-	    Collection<Stop> stops = dao.getAllStops(); 
+	   
+	    /*
+	     * 
+	    int i = 0;
+	    int sumTrips = 0;
+	    //Collection<Stop> colStop = null;
+	    //ArrayList<Stop> listStop = null;
+	    List<StopTime> list = null;
+	    try{
+	    	for( Route route : routes ){
+
+	    	
+	    		if( route.getType() == 1)
+	    		{
+	    			//System.out.println("route:   "+route.getId().getId());
+	    			//trips = dao.getAllTrips();
+	    			for( Trip trip : trips){
+	    				 
+	    				//System.out.println("trip:   "+trip.getRoute().getId().getId());
+	    				int tripId = Integer.parseInt(trip.getRoute().getId().getId());
+	    				int routeId =Integer.parseInt(route.getId().getId());
+	    				if( tripId == routeId ){
+	    					sumTrips++;
+	    					//System.out.println("trps "+tripId+"  route"+routeId);
+	    					
+	    					
+	    					list = dao.getStopTimesForTrip(trip);
+	    					
+	    					
+	    					
+	    					//System.out.println(dao.getStopForId(route.getId()).getName());
+	    				}
+	    			}
+	    			for(StopTime lis : list){
+	    				System.out.println(lis.getStop().getName());
+	    			}
+	    		}
+	    		
+
+	    	}
+	    	System.out.println("sumTrips"+sumTrips);
+	    }catch( Exception e){
+	    	e.printStackTrace();
+	    	
+	    }
+	    
+	    */
+	    
+	    
+	    //GtfsReader reader = new GtfsReader();
+	   // reader.setInputLocation(new File(gtfsFiles));
+
+	   
+	   
+	    //reader.setEntityStore(dao);
+	    //reader.run();
+	    
+	    /*
+	     * 
+	     Collection<Stop> stops = dao.getAllStops(); 
 	    //Collection<StopTime> timeList  = null ;
 	   
 	    
@@ -87,16 +174,6 @@ public class TestReading {
 	    }  
 	    
 	    
-	    
-	    //GtfsReader reader = new GtfsReader();
-	   // reader.setInputLocation(new File(gtfsFiles));
-
-	   
-	   
-	    //reader.setEntityStore(dao);
-	    //reader.run();
-	    
-	    /*
 	    Collection<Trip> trips = dao.getAllTrips();
 	    Collection<Stop> stops = null;
 	    int i = 0;
@@ -141,24 +218,7 @@ public class TestReading {
 	    	
 	    }
 	    // check if the station is a subway or something else 
-	    Collection<Route> routes = dao.getAllRoutes();
-
-	    int i = 0;
-	    try{
-	    	for( Route route : routes ){
-
-	    	
-	    		if( route.getType() == 1)
-	    		{
-	    			i++;
-	    			System.out.println( " This is  a subway" + " and the iteration is: "+i);
-	    			
-	    		}
-
-	    	}
-	    }catch( Exception e){
-	    	
-	    }
+	    
 	    // check the pathways
 	    Collection<Pathway> paths = dao.getAllPathways();
 
