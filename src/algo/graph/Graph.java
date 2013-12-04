@@ -1,17 +1,28 @@
 package algo.graph;
 
+
+import java.io.IOException;
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import javax.swing.JOptionPane;
+
+import serialize.GraphSerialized;
 import algo.graph.Node;
 import algo.graph.interfaces.IGraph;
 import algo.graph.parsing.Parse;
 import algo.graph.parsing.Stops;
 
-public class Graph implements IGraph
+public class Graph implements IGraph, Serializable
 {
+	
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = -6538625992628686871L;
 	public Map<String, Node> node;
 	private ArrayList<Compare> listRelation;
 	
@@ -274,8 +285,19 @@ public class Graph implements IGraph
 		g.addRoute("A","E",173,"l");
 		g.addRoute("E","J",502,"l");*/
 		
-		Parse parse = new Parse();
-		Graph g = parse.getGraph();
+		/* now we can work with the serialized graph it take less than some milliseconds*/
+		//Parse parse = new Parse();
+		//Graph g = parse.getGraph();
+		Graph g = null;
+		// deserialize graph
+		GraphSerialized deserialized  = null;
+		try {
+			deserialized = GraphSerialized.deSerialise("ressources/graph") ;
+		} catch (IOException e1) {
+			// TODO Auto-generated catch block
+			JOptionPane.showMessageDialog(null,"failed to load the graph");
+		}
+		g = deserialized.getSerializedGraph();
 		
 		 /*for(String ville : g.node.keySet())
 		 {

@@ -1,10 +1,16 @@
 package algo.graph;
 
+import java.io.Serializable;
+
 import algo.graph.interfaces.INode;
 import algo.graph.interfaces.IRelation;
 
-public class Relation implements IRelation
+public class Relation implements IRelation, Serializable
 {
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 424014950134055539L;
 	private Node nodeEnd;
 	private Node nodeStart;
 	private int weight;

@@ -4,6 +4,7 @@ import hibernateLocal.HibernateSession;
 
 import java.io.BufferedReader;
 import java.io.FileInputStream;
+import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.util.ArrayList;
@@ -16,6 +17,7 @@ import org.onebusaway.gtfs.model.Trip;
 import org.onebusaway.gtfs.services.GtfsMutableRelationalDao;
 import org.onebusaway.gtfs.services.HibernateGtfsFactory;
 
+import serialize.GraphSerialized;
 import algo.graph.Graph;
 
 public class Parse 
@@ -78,7 +80,7 @@ public class Parse
 		    
 			// Chargement du fichier permettant de r�cup�rer les correspondances et les d�lais entre les stations 
 			try{
-		    String fichierStop_Times = "stop_times.txt";
+		    String fichierStop_Times = "ressources/stop_times.txt";
 			InputStream ipsStop_Times = new FileInputStream(fichierStop_Times); 
 			InputStreamReader ipsrStop_Times = new InputStreamReader(ipsStop_Times);
 			BufferedReader brStop_Times = new BufferedReader(ipsrStop_Times);
@@ -93,7 +95,9 @@ public class Parse
 			
 			brStop_Times.close();
 			}catch( Exception e){
-				System.out.println("no Stoptime file");
+				System.out.println("no Stoptime file or array empty in the second case do not worry");
+				//e.printStackTrace();
+				//System.exit(1);
 			};
 			
 			
@@ -224,6 +228,21 @@ public class Parse
 			
 
 			System.out.println("graph filled");
-		return g;
+			
+			// serialise the graph
+			GraphSerialized serialGraph = new GraphSerialized(g);
+			try {
+			
+				serialGraph.serialise("ressources/graph");
+				System.out.println("serialization done !") ;
+				
+			} catch (IOException e1) {
+				// TODO Auto-generated catch block
+				System.out.println("problem with the serialization") ;
+				e1.printStackTrace();
+
+			}
+			// change or delete getGraph incoming
+		return null;
 	}
 }

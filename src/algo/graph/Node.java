@@ -1,13 +1,18 @@
 package algo.graph;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
 import algo.graph.interfaces.INode;
 import algo.graph.interfaces.IRelation;
 
-public class Node implements INode
+public class Node implements INode, Serializable
 {
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = -1858797871135600787L;
 	private List<IRelation> relation;
 	public String town;
 	public Node previousNode;

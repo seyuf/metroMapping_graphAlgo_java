@@ -1,7 +1,13 @@
 package algo.graph;
 
-public class Compare 
+import java.io.Serializable;
+
+public class Compare implements Serializable 
 {
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 2202438351223634341L;
 	public String depart;
 	public String arrive;
 	
