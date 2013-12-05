@@ -39,7 +39,6 @@ public class Graph implements IGraph, Serializable
 		
 		int isDouble = 0;
 		
-		//System.out.println("Ligne : " + mode);
 		for(int i = 0 ; i < listRelation.size() ; i++)
 		{
 			if(listRelation.get(i).depart.equals(start) && listRelation.get(i).arrive.equals(target))
@@ -86,6 +85,7 @@ public class Graph implements IGraph, Serializable
 			{
 				node.get(ville).weight = 9999999;
 				node.get(ville).previousNode = null;
+				node.get(ville).line = null;
 			}
 		}
 		
@@ -99,9 +99,7 @@ public class Graph implements IGraph, Serializable
 			if(node.get(start.town).getRelations().get(i).getEndNode().toString().equals(end.town))
 				return node.get(start.town).getRelations().get(i).getWeight();			
 		}
-		
-		System.out.println("OK");
-		
+				
 		return 0;
 	}
 
@@ -175,14 +173,55 @@ public class Graph implements IGraph, Serializable
 		List<Node> chemin = new ArrayList<Node>();
 		Node n = end.came_from;
 		
+		chemin.add(end);
+		
 		while(n != null)
 		{
 			chemin.add(n);
 			n = n.came_from;
 		}
-		chemin.add(start);
+		//chemin.add(start);
 		
-		return chemin;
+		List<Node> cheminReverse = new ArrayList<Node>();
+		
+		for(int i = 0 ; i < chemin.size() ; i++)
+		{
+			cheminReverse.add(chemin.get(i));
+		}
+		
+		for(int i = 0 ; i < cheminReverse.size() ; i++)
+		{
+			for(int h = 0 ; h < node.get(cheminReverse.get(i).town).getRelations().size() ; h++)
+			{
+				if(i != cheminReverse.size() - 1)
+				{
+					if(node.get(cheminReverse.get(i).town).getRelations().get(h).getEndNode().town.equals(cheminReverse.get(i+1).town))
+					{
+						cheminReverse.get(i).line = node.get(cheminReverse.get(i).town).getRelations().get(h).getmodeTransport();
+					}
+				}
+			}
+			
+			/*if(i == 0)
+			{
+				cheminReverse.get(i).line = "7B";	
+			}*/
+			
+			if(i == cheminReverse.size() - 1)
+			{
+				for(int h = 0 ; h < node.get(cheminReverse.get(i).town).getRelations().size() ; h++)
+				{
+						if(node.get(cheminReverse.get(i).town).getRelations().get(h).getEndNode().town.equals(cheminReverse.get(i-1).town))
+						{
+							cheminReverse.get(i).line = node.get(cheminReverse.get(i).town).getRelations().get(h).getmodeTransport();
+						}
+				}
+			}
+			
+			System.out.println(cheminReverse.get(i) + " Ligne : " + cheminReverse.get(i).line);
+		}
+			
+		return cheminReverse;
 	}
 		
 	public boolean inClosedset(List<Node> closed_set,Node neighbor)
@@ -243,7 +282,9 @@ public class Graph implements IGraph, Serializable
 			{
 				System.out.println("FINISHED");
 				List<Node> listNode = reconstruct_path(graph.get(start),graph.get(end));
-				listNode.add(graph.get(end));
+				/*listNode.add(graph.get(end));
+				
+				List<Node> listNodePerfect = new ArrayList<Node>();
 				
 				for(int i = listNode.size() - 1 ; i > 0 ; i--)
 				{
@@ -251,11 +292,16 @@ public class Graph implements IGraph, Serializable
 					{
 						if(node.get(listNode.get(i).town).getRelations().get(h).getEndNode().town.equals(listNode.get(i-1).town))
 						{
-							System.out.println(listNode.get(i).town + " => " + listNode.get(i-1).town + " ligne : " + node.get(listNode.get(i).town).getRelations().get(h).getmodeTransport());
+							//System.out.println(listNode.get(i).town + " => " + listNode.get(i-1).town + " ligne : " + node.get(listNode.get(i).town).getRelations().get(h).getmodeTransport());
+							
+							Node node1 = new Node();
+							node1.town = listNode.get(i-1).town;
+							node1.line = node.get(listNode.get(i).town).getRelations().get(h).getmodeTransport();
+							listNodePerfect.add(node1);
 							break;
 						}
 					}
-				}
+				}*/
 				return listNode;
 			}
 			
@@ -302,6 +348,12 @@ public class Graph implements IGraph, Serializable
 		{
 			// Initialization of the summits of graph
 			Init(graph,graph.get(start));
+			
+			/*if(critere.equals("CORRESPONDANCE")) 
+			{
+				System.out.println("CORRESPONDANCE");
+				Dijkstra(graph,start,end,modeTransport,critere);
+			}*/
 			
 			// Create list with all stations
 			List<Node> listNode = new ArrayList<Node>();

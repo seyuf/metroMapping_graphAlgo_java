@@ -185,6 +185,7 @@ public class MainPage
 		ButtonGroup groupTypeTravel = new ButtonGroup();
 		groupTypeTravel.add(fastTravels);
 		groupTypeTravel.add(lessChangeTravels);
+		groupTypeTravel.add(astar);
 		
 		JPanel radioPanelTravel = new JPanel();
 		radioPanelTravel.setLayout(new BorderLayout());
@@ -240,6 +241,10 @@ public class MainPage
 	{
 		public void actionPerformed(ActionEvent e) 
 		{
+			f.setSize(570, 850);
+			f.setLocationRelativeTo(null);
+			f.setResizable(false);
+				
 			// Check radioButton selected
 			if(allButton.isSelected())
 				typeTransport = "TOUS";
@@ -256,31 +261,25 @@ public class MainPage
 			if(lessChangeTravels.isSelected())
 				critereTransport = "CORRESPONDANCE";
 			
-			f.setSize(570, 850);
-			f.setLocationRelativeTo(null);
-			f.setResizable(false);
-			List<Node> chemin = g.Dijkstra(g.node,startTextField.getText(),endTextField.getText(),typeTransport,critereTransport);
-			
-			String ligne = "";
-			/*for(int i = chemin.size()-1 ; i >= 0  ; i--)
+			List<Node> chemin = null;
+			if(astar.isSelected())
 			{
-				if(i != 0)
-				{
-					for(int j = 0 ; j < g.node.get(chemin.get(i).town).getRelations().size() ; j++)
-					{
-						if(g.node.get(chemin.get(i).town).getRelations().get(j).getEndNode().town.equals(chemin.get(i-1).town))
-						{
-							chemin.get(i).ligne = g.node.get(chemin.get(i).town).getRelations().get(j).getmodeTransport();
-							ligne = chemin.get(i).ligne;
-						}
-					}
-				}
+				System.out.println("A STAR : ");
+				chemin = g.AStar(g.node,startTextField.getText(),endTextField.getText(),typeTransport,critereTransport);
+			}
 				
-				else
-				{
-					chemin.get(i).ligne = ligne;
-				}
-			}*/
+			else
+			{
+				System.out.println("DIJKSTRA : ");
+				chemin = g.Dijkstra(g.node,startTextField.getText(),endTextField.getText(),typeTransport,critereTransport);
+			}
+			
+			if(chemin == null)
+			{
+				JOptionPane.showMessageDialog(f, "Erreur de recherche. Merci de vérifier les correspondances ou les stations que vous recherché.");
+			}
+
+			String ligne = "";
 			
 			String messageDisplay = "";
 			String ligneTemp = "";
@@ -305,8 +304,6 @@ public class MainPage
 			int lastminuteTemp = minuteDepart;
 			int heureTemp = heureDepart;
 			int minuteTemp = minuteDepart;
-			
-			//System.out.println("H : " + heure + " M : " + minute);
 			
 			refreshImg(g,chemin,chemin.size()-1);
 						
@@ -370,9 +367,6 @@ public class MainPage
 							minuteTemp = Integer.parseInt(min);
 						}
 					}
-					
-					//System.out.println("Distance entre " + chemin.get(i) + " � " + chemin.get(i-1) + " : " + W);			
-					//System.out.println("Valeur de Weight : " + weight);
 				}
 			}
 			
@@ -433,7 +427,7 @@ public class MainPage
 			
 			traceWebView = new SwingFXWebView(displayParcourt,"test1.html");
 			traceWebView.setBackground(Color.decode("#EEEEEE"));
-			traceWebView.setPreferredSize(new Dimension(520,350));
+			traceWebView.setPreferredSize(new Dimension(500,450));
 			
 			pc = new JScrollPane(traceWebView, JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED, JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
 			pc.setPreferredSize(new Dimension(530, 220));
@@ -467,6 +461,8 @@ public class MainPage
 			// Permet de ne pas avoir � redimensionner la fen�tre
 			f.validate();
 			f.repaint();
+			
+			// g.Init(g.node,g.node.get(startTextField.getText()));
 		}
 	};
 	
