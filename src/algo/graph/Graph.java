@@ -109,7 +109,17 @@ public class Graph implements IGraph, Serializable
 		if(modeTransport == "TOUS") // If the mode of transport is "Tous" then add all of the graph
 		{
 			for(String ville : graphTotal.keySet())
+			{
+				if(ville.equals("MAURICE LACHATRE"))
+				{
+					for(int i = 0 ;  i < node.get(ville).getRelations().size() ; i++)
+					{
+						System.out.println(node.get(ville).getRelations().get(i).getStartNode().town + " => " + node.get(ville).getRelations().get(i).getEndNode().town + " Ligne : " + node.get(ville).getRelations().get(i).getLigneTransport());
+					}
+					System.out.println("MAURICE");
+				}
 				listNode.add(graphTotal.get(ville));
+			}
 		}
 		
 		else
@@ -348,13 +358,7 @@ public class Graph implements IGraph, Serializable
 		{
 			// Initialization of the summits of graph
 			Init(graph,graph.get(start));
-			
-			/*if(critere.equals("CORRESPONDANCE")) 
-			{
-				System.out.println("CORRESPONDANCE");
-				Dijkstra(graph,start,end,modeTransport,critere);
-			}*/
-			
+						
 			// Create list with all stations
 			List<Node> listNode = new ArrayList<Node>();
 			

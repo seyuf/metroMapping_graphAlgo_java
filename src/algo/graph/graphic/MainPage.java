@@ -323,17 +323,57 @@ public class MainPage
 			weight += getDistance(g,chemin.get(chemin.size()-1),chemin.get(chemin.size()-2));
 			System.out.println("Distance entre " + chemin.get(chemin.size()-1) + " � " + chemin.get(chemin.size()-2) + " : " + weight);			
 			
+			String stringLastheureTemp = Integer.toString(heureDepart);
+			String stringLastMinuteTemp =	Integer.toString(minuteDepart);
+			String stringMinuteTemp = "";
+			String stringheureTemp = "";
+			
 			for(int i = chemin.size()-1 ; i >= 0  ; i--)
 			{
 				if(!ligneTemp.equals(chemin.get(i).line))
 				{
 					System.out.println("Weight aux changements : " + weight);
 					weightTotal += weight;
-					displayParcourt += "jusqu'a <strong>" + chemin.get(i+1).town +"</strong></TD> <TD>" + lastHeureTemp + "h" + lastminuteTemp +  "<br>" + heureTemp + "h" + minuteTemp + "</TD> <TD>" + weight + "min </TD> </TR>";
+									
+					System.out.println("HEURE : " + lastHeureTemp);
+					
+					if(stringLastheureTemp.equals(Integer.toString(heureDepart)))
+					{
+						stringLastheureTemp = Integer.toString(heureDepart);
+						stringLastMinuteTemp =	Integer.toString(minuteDepart);
+						
+						if(heureDepart < 10)
+							stringLastheureTemp = "0" + heureDepart;
+						
+						if(minuteDepart < 10)
+							stringLastMinuteTemp = "0" + minuteDepart;
+						
+						minuteTemp += 2;
+						
+						
+						stringMinuteTemp = Integer.toString(minuteTemp);
+					}
+					
+					displayParcourt += "jusqu'a <strong>" + chemin.get(i+1).town +"</strong></TD> <TD>" + stringLastheureTemp + "h" + stringLastMinuteTemp +  "<br>" + stringheureTemp + "h" + stringMinuteTemp + "</TD> <TD>" + weight + "min </TD> </TR>";
 					
 					weight = 0;
 					lastHeureTemp = heureTemp;
 					lastminuteTemp = minuteTemp;
+					
+					stringLastMinuteTemp = Integer.toString(lastminuteTemp);
+					stringLastheureTemp = Integer.toString(lastHeureTemp);
+					
+					if(lastminuteTemp > 60)
+					{
+						lastminuteTemp -= 60;
+						lastHeureTemp += 1;
+						
+						if(lastminuteTemp < 10)
+							stringLastMinuteTemp = "0" + lastminuteTemp;
+						
+						if(lastHeureTemp < 10)
+							stringLastheureTemp = "0" + lastHeureTemp; 
+					}
 							
 					System.out.println(" jusqua : " + chemin.get(i+1).town);
 					
@@ -354,7 +394,10 @@ public class MainPage
 					weight += getDistance(g,chemin.get(i),chemin.get(i-1));
 					W = getDistance(g,chemin.get(i),chemin.get(i-1));
 					
-					minuteTemp += W;
+					minuteTemp += W ;
+					
+					stringMinuteTemp = Integer.toString(minuteTemp);
+					stringheureTemp = Integer.toString(heureTemp);
 					
 					if(minuteTemp > 60)
 					{
@@ -362,17 +405,22 @@ public class MainPage
 						heureTemp += 1;
 						
 						if(minuteTemp < 10)
-						{
-							String min = "0" + minuteTemp;
-							minuteTemp = Integer.parseInt(min);
-						}
+							stringMinuteTemp = "0" + minuteTemp;
+						
+						if(heureTemp < 10)
+							stringheureTemp = "0" + heureTemp; 
 					}
 				}
 			}
 			
 			weightTotal += weight;
 			System.out.println("Distance TOTAL : " + weightTotal);
-			displayParcourt += "jusqu'a <strong>" + chemin.get(0).town +"</strong></TD> <TD>" + lastHeureTemp + "h" + lastminuteTemp +  "<br>" + heureTemp + "h" + minuteTemp + "</TD> <TD>" + weight + "min </TD> </TR>";
+			
+			
+			System.out.println("Heure TEMP : " + lastHeureTemp + " STRING HEURE TEMP " + stringheureTemp);
+			
+			stringMinuteTemp = Integer.toString(minuteTemp) ;
+			displayParcourt += "jusqu'a <strong>" + chemin.get(0).town +"</strong></TD> <TD>" + stringLastheureTemp + "h" + stringLastMinuteTemp +  "<br>" + stringheureTemp + "h" + stringMinuteTemp + "</TD> <TD>" + weight + "min </TD> </TR>";
 			//displayParcourt += "jusqu'a <strong>" + chemin.get(0).town +"</strong></TD> <TD> 14h41<br> 14h52 </TD> <TD> 11 min </TD> </TR> </TABLE>";
 			messageDisplay += " jusqua : " + chemin.get(0).town;
 			System.out.println(" jusqua : " + chemin.get(0).town);
@@ -406,7 +454,11 @@ public class MainPage
 			f.repaint();
 			
 			// Refresh Date
+			
 			int minuteFin = minuteDepart + weightTotal;
+			String stringMinuteFin = Integer.toString(minuteFin);
+			String stringHeureFin = "";
+			
 			int i =0;
 			while(minuteFin > 60)
 			{
@@ -416,14 +468,18 @@ public class MainPage
 			
 			if(minuteFin < 10)
 			{
-				String min = "0" + minuteFin;
-				minuteFin = Integer.parseInt(min);
+				stringMinuteFin = "0" + minuteFin;
+				// minuteFin = Integer.parseInt(min);
 			}
 			
 			int heureFin = heureDepart + i;
+			stringHeureFin = Integer.toString(heureFin);
+			if(heureFin < 10)
+			{
+				stringHeureFin = "0" + heureFin;
+			}
 			
-			//int minuteFin = Integer.parseInt(texte_date.substring(3,5));
-            date.setText("Départ : " + heureDepart + "h" + minuteDepart + "                      Arrivée : " + heureFin + "h" + minuteFin);
+            date.setText("Départ : " + heureDepart + "h" + minuteDepart + "                      Arrivée : " + stringHeureFin + "h" + stringMinuteFin);
 			
 			traceWebView = new SwingFXWebView(displayParcourt,"test1.html");
 			traceWebView.setBackground(Color.decode("#EEEEEE"));
@@ -461,22 +517,22 @@ public class MainPage
 			// Permet de ne pas avoir � redimensionner la fen�tre
 			f.validate();
 			f.repaint();
-			
-			// g.Init(g.node,g.node.get(startTextField.getText()));
+
 		}
 	};
 	
 	
 	public static void refreshImg(Graph g,List<Node> chemin,int i)
 	{
+		System.out.println("LIGNE : " + g.node.get(chemin.get(i).town).line);
 		if(g.node.get(chemin.get(i).town).line.contains("T"))
 		{
 			imgTransport = "icon:imageTram";
-			
 			imgHTMLTransport = "<img src='logo_ratp/tramway.png'>";
 			switch(g.node.get(chemin.get(i).town).line)
 			{
 				case "T1":
+					System.out.println("OKKKKK T1");
 					imgLigne = "<img src='logo_ratp/tramway_1.png'>";
 					break;
 					
@@ -486,7 +542,7 @@ public class MainPage
 			}
 		}
 		
-		if(g.node.get(chemin.get(i).town).line.equals("A") || g.node.get(chemin.get(i).town).line.equals("B"))
+		else if(g.node.get(chemin.get(i).town).line.equals("A") || g.node.get(chemin.get(i).town).line.equals("B"))
 		{
 			imgTransport = "icon:imageRER";
 			
