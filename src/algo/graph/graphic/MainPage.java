@@ -53,7 +53,7 @@ public class MainPage
 	public JLabel space6 = new JLabel();
 	
 	public JLabel modeTransport = new JLabel("Mode de transport                            ");	
-	public JLabel critere = new JLabel("Critères                                                ");	
+	public JLabel critere = new JLabel("Criteres                                                ");	
 	public JLabel date = new JLabel("");	
 	public SwingFXWebView traceWebView = new SwingFXWebView();
 	public JTextField startTextField = new JTextField();
@@ -235,7 +235,7 @@ public class MainPage
 	        }
 	    });
 		
-		// Permet de ne pas avoir  à  redimensionner la fen�tre
+		// Permet de ne pas avoir  a  redimensionner la fenetre
 		f.validate();
 		f.repaint();
 	}
@@ -282,7 +282,7 @@ public class MainPage
 			
 			if(chemin == null)
 			{
-				JOptionPane.showMessageDialog(f, "Erreur de recherche. Merci de vérifier les correspondances ou les stations que vous recherché.");
+				JOptionPane.showMessageDialog(f, "Erreur de recherche. Merci de verifier les correspondances ou les stations que vous recherche.");
 				return;
 			}
 
@@ -330,7 +330,7 @@ public class MainPage
 			double co2calcul = 0;
 			
 			weight += getDistance(g,chemin.get(chemin.size()-1),chemin.get(chemin.size()-2));
-			System.out.println("Distance entre " + chemin.get(chemin.size()-1) + " � " + chemin.get(chemin.size()-2) + " : " + weight);			
+			System.out.println("Distance entre " + chemin.get(chemin.size()-1) + " a " + chemin.get(chemin.size()-2) + " : " + weight);			
 			
 			String stringLastheureTemp = Integer.toString(heureDepart);
 			String stringLastMinuteTemp =	Integer.toString(minuteDepart);
@@ -471,7 +471,7 @@ public class MainPage
 			int duration = minute - minuteDepart;
 
 			date.setPreferredSize(new Dimension(244,15));
-            date.setText("Départ: " + heureDepart + "h" + minuteDepart + " Arrivée: " + stringHeureFin + "h" + stringMinuteFin + " Durée: " + duration + "min");
+            date.setText("Depart: " + heureDepart + "h" + minuteDepart + " Arrivee: " + stringHeureFin + "h" + stringMinuteFin + " Duree: " + duration + "min");
 			
 			traceWebView = new SwingFXWebView(displayParcourt,"test1.html");
 			traceWebView.setBackground(Color.decode("#EEEEEE"));
@@ -506,7 +506,7 @@ public class MainPage
 			gbc.gridheight = 4;
 			f.add(webView, gbc);
 			
-			// Permet de ne pas avoir � redimensionner la fen�tre
+			// Permet de ne pas avoir a redimensionner la fenetre
 			f.validate();
 			f.repaint();
 
