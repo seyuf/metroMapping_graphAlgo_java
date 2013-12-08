@@ -110,7 +110,7 @@ public class Graph implements IGraph, Serializable
 			{
 				node.get(ville).weight = 9999999;
 				node.get(ville).previousNode = null;
-				node.get(ville).line = null;
+				// node.get(ville).line = null;
 			}
 		}
 		
@@ -244,8 +244,7 @@ public class Graph implements IGraph, Serializable
 			chemin.add(n);
 			n = n.came_from;
 		}
-		//chemin.add(start);
-		
+
 		List<Node> cheminReverse = new ArrayList<Node>();
 		
 		for(int i = 0 ; i < chemin.size() ; i++)
@@ -265,12 +264,7 @@ public class Graph implements IGraph, Serializable
 					}
 				}
 			}
-			
-			/*if(i == 0)
-			{
-				cheminReverse.get(i).line = "7B";	
-			}*/
-			
+
 			if(i == cheminReverse.size() - 1)
 			{
 				for(int h = 0 ; h < node.get(cheminReverse.get(i).town).getRelations().size() ; h++)
@@ -357,9 +351,6 @@ public class Graph implements IGraph, Serializable
 	 */
 	public List<Node> AStar(Map<String, Node> graph,String start,String end,String modeTransport,String critere)
 	{
-		// Permet de preremplir les weight ( pout les heuristique )
-		//Dijkstra(graph,start,end,modeTransport,critere);
-
 		List<Node> closedset = new ArrayList<Node>();
 		List<Node> openset = new ArrayList<Node>();
 		
@@ -407,7 +398,6 @@ public class Graph implements IGraph, Serializable
 						graph.get(current.town).getRelations().get(i).getEndNode().weight = tentative_g_score;
 						graph.get(current.town).getRelations().get(i).getEndNode().heuristic = tentative_f_score;
 						
-						//System.out.println("End node : " + graph.get(current.town).getRelations().get(i).getEndNode().town);
 						if(!inOpenset(openset,graph.get(current.town).getRelations().get(i).getEndNode()))
 						{
 							openset.add(graph.get(current.town).getRelations().get(i).getEndNode());
@@ -416,9 +406,6 @@ public class Graph implements IGraph, Serializable
 				}
 			}			
 		}
-		
-		// System.out.println("FINISH");
-		
 		return null;
 	}
 	
@@ -487,7 +474,7 @@ public class Graph implements IGraph, Serializable
 										}
 
 										else
-											graph.get(n1.town).getRelations().get(i).getEndNode().weight += 5;
+											graph.get(n1.town).getRelations().get(i).getEndNode().weight += 3;
 									}
 								}
 							}
@@ -518,14 +505,7 @@ public class Graph implements IGraph, Serializable
 			{
 				System.out.println(chemin.get(i).town + " Ligne : " + chemin.get(i).line);	
 			}
-			
-			
-			System.out.println();
-			System.out.println();
-			System.out.println();
-			System.out.println("FIN");
-			
-												
+								
 			return chemin;
 		}
 		catch(Exception E)
@@ -571,12 +551,6 @@ public class Graph implements IGraph, Serializable
 	
 	public static void main(String[] args)
 	{
-	
-		
-		//Parse parse = new Parse();
-		//Graph g = parse.getGraph();
-		
-		
 		GraphSerialized deserialized  = null;
 		try {
 			deserialized = GraphSerialized.deSerialise("ressources/graph2") ;
@@ -587,10 +561,6 @@ public class Graph implements IGraph, Serializable
 		Graph g = deserialized.getSerializedGraph();
 		
 		List<Node> chemin = g.Dijkstra(g.node,"République","Balard","TOUS","OK");
-		//g.AStar(g.node,"La Courneuve-8-Mai-1945","Montparnasse-Bienvenue","TOUS","OK");
-		// List<Node> chemin = g.Dijkstra(g.node,"Balard","Pointe du Lac","TOUS","OK");
-		
-
 	}
 
 
