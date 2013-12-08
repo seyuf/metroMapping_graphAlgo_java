@@ -586,7 +586,7 @@ public class Graph implements IGraph, Serializable
 		}
 		Graph g = deserialized.getSerializedGraph();
 		
-		List<Node> chemin = g.Dijkstra(g.node,"Republique","Balard","TOUS","OK");
+		List<Node> chemin = g.Dijkstra(g.node,"République","Balard","TOUS","OK");
 		//g.AStar(g.node,"La Courneuve-8-Mai-1945","Montparnasse-Bienvenue","TOUS","OK");
 		// List<Node> chemin = g.Dijkstra(g.node,"Balard","Pointe du Lac","TOUS","OK");
 		
