@@ -67,6 +67,7 @@ public class MainPage
 	JRadioButton allButton   = new JRadioButton("TOUS"  , true);
 	JRadioButton rerButton    = new JRadioButton("RER"   , false);
 	JRadioButton metroButton = new JRadioButton("METRO", false);
+	JRadioButton tramwayButton = new JRadioButton("TRAMWAY", false);
 	
 	// Type travels
 	JRadioButton fastTravels   = new JRadioButton("Le plus rapide"  , true);
@@ -89,11 +90,11 @@ public class MainPage
 	public MainPage()
 	{		
 		f.setTitle("Algo Graph");
-		f.setSize(550, 220);
+		f.setSize(570, 250);
 		f.setIconImage(imageApp);
 		f.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		f.setLocationRelativeTo(null);
-		f.setResizable(false);
+		//f.setResizable(false);
 		f.setVisible(true);
 		
 		GraphSerialized deserialized  = null;
@@ -169,12 +170,14 @@ public class MainPage
 		bgroup.add(allButton);
 		bgroup.add(rerButton);
 		bgroup.add(metroButton);
+		bgroup.add(tramwayButton);
 		
 		JPanel radioPanel = new JPanel();
-		radioPanel.setLayout(new GridLayout(1,3));
+		radioPanel.setLayout(new GridLayout(2,3));
 		radioPanel.add(allButton);
 		radioPanel.add(rerButton);
 		radioPanel.add(metroButton);
+		radioPanel.add(tramwayButton);
 		
 		gbc.gridx = 0;
 		gbc.gridy = 8;
@@ -241,7 +244,7 @@ public class MainPage
 	{
 		public void actionPerformed(ActionEvent e) 
 		{
-			f.setSize(570, 850);
+			f.setSize(570, 855);
 			f.setLocationRelativeTo(null);
 			f.setResizable(false);
 				
@@ -254,6 +257,9 @@ public class MainPage
 			
 			if(metroButton.isSelected())
 				typeTransport = "METRO";
+			
+			if(tramwayButton.isSelected())
+				typeTransport = "TRAM";
 			
 			if(fastTravels.isSelected())
 				critereTransport = "FAST";
@@ -277,6 +283,7 @@ public class MainPage
 			if(chemin == null)
 			{
 				JOptionPane.showMessageDialog(f, "Erreur de recherche. Merci de vérifier les correspondances ou les stations que vous recherché.");
+				return;
 			}
 
 			String ligne = "";
@@ -320,6 +327,8 @@ public class MainPage
 			int weightTotal = 0;
 			int W = 0;
 			int weight = 0;
+			double co2calcul = 0;
+			
 			weight += getDistance(g,chemin.get(chemin.size()-1),chemin.get(chemin.size()-2));
 			System.out.println("Distance entre " + chemin.get(chemin.size()-1) + " � " + chemin.get(chemin.size()-2) + " : " + weight);			
 			
@@ -328,56 +337,29 @@ public class MainPage
 			String stringMinuteTemp = "";
 			String stringheureTemp = "";
 			
+			int lastI = chemin.size()-1;
+			
 			for(int i = chemin.size()-1 ; i >= 0  ; i--)
 			{
 				if(!ligneTemp.equals(chemin.get(i).line))
 				{
 					System.out.println("Weight aux changements : " + weight);
 					weightTotal += weight;
-									
-					System.out.println("HEURE : " + lastHeureTemp);
-					
-					if(stringLastheureTemp.equals(Integer.toString(heureDepart)))
+					if(weightTotal == weight)
 					{
-						stringLastheureTemp = Integer.toString(heureDepart);
-						stringLastMinuteTemp =	Integer.toString(minuteDepart);
-						
-						if(heureDepart < 10)
-							stringLastheureTemp = "0" + heureDepart;
-						
-						if(minuteDepart < 10)
-							stringLastMinuteTemp = "0" + minuteDepart;
-						
 						minuteTemp += 2;
-						
-						
-						stringMinuteTemp = Integer.toString(minuteTemp);
 					}
-					
-					displayParcourt += "jusqu'a <strong>" + chemin.get(i+1).town +"</strong></TD> <TD>" + stringLastheureTemp + "h" + stringLastMinuteTemp +  "<br>" + stringheureTemp + "h" + stringMinuteTemp + "</TD> <TD>" + weight + "min </TD> </TR>";
+
+					displayParcourt += "jusqu'a <strong>" + chemin.get(i+1).town +"</strong></TD> <TD>" + lastHeureTemp + "h" + lastminuteTemp +  "<br>" + heureTemp + "h" + minuteTemp + "</TD> <TD>" + weight + "min </TD> </TR>";
 					
 					weight = 0;
 					lastHeureTemp = heureTemp;
 					lastminuteTemp = minuteTemp;
-					
-					stringLastMinuteTemp = Integer.toString(lastminuteTemp);
-					stringLastheureTemp = Integer.toString(lastHeureTemp);
-					
-					if(lastminuteTemp > 60)
-					{
-						lastminuteTemp -= 60;
-						lastHeureTemp += 1;
-						
-						if(lastminuteTemp < 10)
-							stringLastMinuteTemp = "0" + lastminuteTemp;
-						
-						if(lastHeureTemp < 10)
-							stringLastheureTemp = "0" + lastHeureTemp; 
-					}
 							
 					System.out.println(" jusqua : " + chemin.get(i+1).town);
 					
 					refreshImg(g,chemin,i);
+					co2calcul += calculC02(g,chemin.get(i).town,chemin.get(i+1).town,"");
 					
 					marqueur += "var marqueur = new google.maps.Marker({position: new google.maps.LatLng(" + g.node.get(chemin.get(i).town).latitude + "," + g.node.get(chemin.get(i).town).longitude + "),map: carte,title: '" + g.node.get(chemin.get(i+1).town).town.replace("-"," ").replace("'","'\\")  + "'," + MainPage.imgTransport + "}); attacherMessageSecret(marqueur, marqueur.title);";
 					parcourt += "new google.maps.LatLng(" + g.node.get(chemin.get(i).town).latitude + "," + g.node.get(chemin.get(i).town).longitude + "),";
@@ -385,6 +367,7 @@ public class MainPage
 					
 					displayParcourt += "<TR> <TD>"+ MainPage.imgHTMLTransport + MainPage.imgLigne + "</TD> <TD> depuis <strong>" + chemin.get(i+1).town +"</strong><br/>";
 					System.out.println("De " + chemin.get(i+1).town + " : " + chemin.get(i).line);
+					lastI = i;
 				}
 				
 				ligneTemp = chemin.get(i).line;
@@ -394,38 +377,40 @@ public class MainPage
 					weight += getDistance(g,chemin.get(i),chemin.get(i-1));
 					W = getDistance(g,chemin.get(i),chemin.get(i-1));
 					
-					minuteTemp += W ;
+					minuteTemp += W;
 					
-					stringMinuteTemp = Integer.toString(minuteTemp);
-					stringheureTemp = Integer.toString(heureTemp);
-					
-					if(minuteTemp > 60)
+					if(minuteTemp >= 60)
 					{
 						minuteTemp -= 60;
 						heureTemp += 1;
 						
 						if(minuteTemp < 10)
-							stringMinuteTemp = "0" + minuteTemp;
-						
-						if(heureTemp < 10)
-							stringheureTemp = "0" + heureTemp; 
+						{
+							String min = "0" + minuteTemp;
+							minuteTemp = Integer.parseInt(min);
+						}
 					}
 				}
 			}
 			
 			weightTotal += weight;
+			if(weightTotal == weight)
+			{
+				minuteTemp += 2;
+			}
+			
 			System.out.println("Distance TOTAL : " + weightTotal);
-			
-			
-			System.out.println("Heure TEMP : " + lastHeureTemp + " STRING HEURE TEMP " + stringheureTemp);
-			
-			stringMinuteTemp = Integer.toString(minuteTemp) ;
-			displayParcourt += "jusqu'a <strong>" + chemin.get(0).town +"</strong></TD> <TD>" + stringLastheureTemp + "h" + stringLastMinuteTemp +  "<br>" + stringheureTemp + "h" + stringMinuteTemp + "</TD> <TD>" + weight + "min </TD> </TR>";
+			displayParcourt += "jusqu'a <strong>" + chemin.get(0).town +"</strong></TD> <TD>" + lastHeureTemp + "h" + lastminuteTemp +  "<br>" + heureTemp + "h" + minuteTemp + "</TD> <TD>" + weight + "min </TD> </TR>";
 			//displayParcourt += "jusqu'a <strong>" + chemin.get(0).town +"</strong></TD> <TD> 14h41<br> 14h52 </TD> <TD> 11 min </TD> </TR> </TABLE>";
 			messageDisplay += " jusqua : " + chemin.get(0).town;
 			System.out.println(" jusqua : " + chemin.get(0).town);
 			
 			refreshImg(g,chemin,0);
+			co2calcul += calculC02(g,chemin.get(lastI).town,chemin.get(0).town," ");
+			imgTransport = "";
+			double co2Car = calculC02(g,chemin.get(chemin.size()-1).town,chemin.get(0).town,"car");
+			
+			displayParcourt += "<TR><TD><img src='logo_ratp/co2.png'></TD><TD colspan='3'>Les emissions de CO2 pour cet itineraire sont estimees a :<br/>Transports en commun : <strong>" + co2calcul + "</strong> g        Voiture : <strong>" +  co2Car + " </strong> g </TD></TR>";
 			
 			marqueur += "var marqueur = new google.maps.Marker({position: new google.maps.LatLng(" + g.node.get(chemin.get(0).town).latitude + "," + g.node.get(chemin.get(0).town).longitude + "),map: carte,title: '" + g.node.get(chemin.get(0).town).town.replace("-"," ").replace("'","'\\")  + "'," +MainPage.imgTransport + "}); attacherMessageSecret(marqueur, marqueur.title);";
 			marqueur += "var marqueur = new google.maps.Marker({position: new google.maps.LatLng(" + g.node.get(chemin.get(0).town).latitude + "," + g.node.get(chemin.get(0).town).longitude + "),map: carte,title: '" + g.node.get(chemin.get(0).town).town.replace("-"," ").replace("'","'\\")  + "',icon:imageEnd});";
@@ -454,9 +439,7 @@ public class MainPage
 			f.repaint();
 			
 			// Refresh Date
-			
 			int minuteFin = minuteDepart + weightTotal;
-			String stringMinuteFin = Integer.toString(minuteFin);
 			String stringHeureFin = "";
 			
 			int i =0;
@@ -466,12 +449,6 @@ public class MainPage
 				i++;
 			}
 			
-			if(minuteFin < 10)
-			{
-				stringMinuteFin = "0" + minuteFin;
-				// minuteFin = Integer.parseInt(min);
-			}
-			
 			int heureFin = heureDepart + i;
 			stringHeureFin = Integer.toString(heureFin);
 			if(heureFin < 10)
@@ -479,7 +456,22 @@ public class MainPage
 				stringHeureFin = "0" + heureFin;
 			}
 			
-            date.setText("Départ : " + heureDepart + "h" + minuteDepart + "                      Arrivée : " + stringHeureFin + "h" + stringMinuteFin);
+			String stringMinuteFin = Integer.toString(minuteFin);
+			
+			if(minuteFin < 10)
+			{
+				stringMinuteFin = "0" + minuteFin;
+			}
+			
+			int diffHours = heureFin - heureDepart;
+			int minute = minuteFin;
+			if(diffHours > 0)
+			minute = minuteFin + 60;
+			
+			int duration = minute - minuteDepart;
+
+			date.setPreferredSize(new Dimension(244,15));
+            date.setText("Départ: " + heureDepart + "h" + minuteDepart + " Arrivée: " + stringHeureFin + "h" + stringMinuteFin + " Durée: " + duration + "min");
 			
 			traceWebView = new SwingFXWebView(displayParcourt,"test1.html");
 			traceWebView.setBackground(Color.decode("#EEEEEE"));
@@ -505,7 +497,7 @@ public class MainPage
 			f.repaint();
 						
 			webView = new SwingFXWebView(cheminement,"test.html");
-			webView.setPreferredSize(new Dimension(520,395));
+			webView.setPreferredSize(new Dimension(520,355));
 			webView.setBackground(Color.decode("#EEEEEE"));
 			
 			gbc.gridx = 0;
@@ -521,6 +513,64 @@ public class MainPage
 		}
 	};
 	
+	public static double calculC02(Graph g,String start,String end,String modeTransport)
+	{
+		int co2 = 0;
+		
+		if(modeTransport.equals("car"))
+		{
+			return 183.3 * calcul_vol_oiseau(g.node.get(start),g.node.get(end));
+		}
+		
+		if(imgTransport.equals("icon:imageTram"))
+		{
+			return 4 * calcul_vol_oiseau(g.node.get(start),g.node.get(end));
+		}
+		
+		else if(imgTransport.equals("icon:imageRER"))
+		{
+			return 4.2 * calcul_vol_oiseau(g.node.get(start),g.node.get(end));
+		}
+		
+		else
+		{
+			return 3.1 * calcul_vol_oiseau(g.node.get(start),g.node.get(end));
+		}
+	}
+	
+	public static double distanceVolOiseauEntre2Points(double lat1, double lon1, double lat2, double lon2) 
+	{
+        return
+        Math.acos(
+            Math.sin(lat1)*Math.sin(lat2)+Math.cos(lat1)*Math.cos(lat2)*Math.cos(lon1-lon2)
+        );
+    }
+	
+	public static Integer calcul_vol_oiseau(Node start,Node goal)
+	{
+		try
+		{
+			double lat1  = Double.parseDouble(start.latitude);
+			double lon1 = Double.parseDouble(start.longitude);
+			
+			double lat2 = Double.parseDouble(goal.latitude);
+			double lon2 = Double.parseDouble(goal.longitude);
+		
+			lat1 = Math.toRadians(lat1);
+	        lon1 = Math.toRadians(lon1);
+	        lat2 = Math.toRadians(lat2);
+	        lon2 = Math.toRadians(lon2);
+	 
+	        double distance = distanceVolOiseauEntre2Points(lat1, lon1, lat2, lon2);
+			
+	        return (int)(distance*6366);
+		}
+		catch(Exception E)
+		{
+			System.out.println("Exception ");
+			return 99999;
+		}
+	}
 	
 	public static void refreshImg(Graph g,List<Node> chemin,int i)
 	{

@@ -110,14 +110,6 @@ public class Graph implements IGraph, Serializable
 		{
 			for(String ville : graphTotal.keySet())
 			{
-				if(ville.equals("MAURICE LACHATRE"))
-				{
-					for(int i = 0 ;  i < node.get(ville).getRelations().size() ; i++)
-					{
-						System.out.println(node.get(ville).getRelations().get(i).getStartNode().town + " => " + node.get(ville).getRelations().get(i).getEndNode().town + " Ligne : " + node.get(ville).getRelations().get(i).getLigneTransport());
-					}
-					System.out.println("MAURICE");
-				}
 				listNode.add(graphTotal.get(ville));
 			}
 		}
