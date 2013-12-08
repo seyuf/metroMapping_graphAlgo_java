@@ -20,6 +20,13 @@ import org.onebusaway.gtfs.services.HibernateGtfsFactory;
 import serialize.GraphSerialized;
 import algo.graph.Graph;
 
+/**
+ * this class allows the filling of the {@link Graph} object from sql database filled with GTFS files 
+ * from the RATP
+ * @author  ESGI Students COULIBALY // DA-COSTA // BEKAERT 
+ * @version 1.0
+ */ 
+
 public class Parse 
 {
 	public static ArrayList<Item> relationString = new ArrayList<Item>();
@@ -34,7 +41,12 @@ public class Parse
 	{
 		
 	}
-	
+	/**
+	 * get the transportation mode
+	 * 
+	 *  @param type the integer type with will help resolving the transportation type
+	 *  @return Metro or bus or tram ...
+	 */
 	public String getTransportation(int type){
 		if(type == 1)
 			return "METRO";
@@ -49,6 +61,15 @@ public class Parse
 
 		
 	}
+	/**
+	 * create the the graph of transportation routes (subway)
+	 * thanks to the sql database created from GTFS files 
+	 * the graph will be serialised into graph file into ressources directory
+	 * for performance purpose so we will not need to reset, anytime we will launch the program
+	 * 
+	 *  
+	 *  @return a graph 
+	 */
 	public Graph getGraph()
 	{
 		// Cr�ation du Graph a retourner
@@ -112,42 +133,7 @@ public class Parse
 			    	
 			    }
 
-			    
-			    try
-			    {
-					String fichierGeo= "geo.csv";
-					InputStream ipsGeo = new FileInputStream(fichierGeo); 
-					InputStreamReader ipsrGeo = new InputStreamReader(ipsGeo);
-					BufferedReader brGeo = new BufferedReader(ipsrGeo);
-					
-					String ligneGeo;
-					brGeo.readLine();
-					while ((ligneGeo = brGeo.readLine()) != null)
-					{
-						String [] splitGeo = ligneGeo.split("#");
-						coordonneesStops.add(new Geo(splitGeo[0],splitGeo[1],splitGeo[2]));
-					}
-					brGeo.close();
-			    }
-			    catch(Exception E)
-			    {
-			    	
-			    }
-			
 
-			for(int i = 0 ; i < stops.size() ; i++)
-			{
-				for(int j = 0 ; j < coordonneesStops.size() ; j++)
-				{
-					if(coordonneesStops.get(j).id.equals(stops.get(i).parent))
-					{						
-						stops.get(i).stop_lat = coordonneesStops.get(j).latitude;
-						stops.get(i).stop_long = coordonneesStops.get(j).longitude;
-					}
-				}
-			}
-			
-			
 			System.out.println("Parsing termin�");
 			System.out.println("");
 			
@@ -236,7 +222,7 @@ public class Parse
 			GraphSerialized serialGraph = new GraphSerialized(g);
 			try {
 			
-				serialGraph.serialise("ressources/graph");
+				serialGraph.serialise("ressources/graph2");
 				System.out.println("serialization done !") ;
 				
 			} catch (IOException e1) {
@@ -246,6 +232,64 @@ public class Parse
 
 			}
 			// change or delete getGraph incoming
-		return null;
+		return g;
 	}
 }
+
+
+
+
+
+/* this code is not necessary  i have test it and launched astar  do not put it back 
+long startCode = System.currentTimeMillis();
+long endCode   = System.currentTimeMillis();
+System.out.println("fichier geo last1"+(endCode-startCode));
+
+try
+{
+	
+	//startCode = System.currentTimeMillis();
+	String fichierGeo= "geo.csv";
+	InputStream ipsGeo = new FileInputStream(fichierGeo); 
+	InputStreamReader ipsrGeo = new InputStreamReader(ipsGeo);
+	BufferedReader brGeo = new BufferedReader(ipsrGeo);
+	
+	String ligneGeo;
+	brGeo.readLine();
+	while ((ligneGeo = brGeo.readLine()) != null)
+	{
+		String [] splitGeo = ligneGeo.split("#");
+		coordonneesStops.add(new Geo(splitGeo[0],splitGeo[1],splitGeo[2]));
+	}
+	brGeo.close();
+
+}
+catch(Exception E)
+{
+	
+}
+
+
+for(int i = 0 ; i < stops.size() ; i++)
+{
+for(int j = 0 ; j < coordonneesStops.size() ; j++)
+{
+	if(coordonneesStops.get(j).id.equals(stops.get(i).parent))
+	{						
+		stops.get(i).stop_lat = coordonneesStops.get(j).latitude;
+		stops.get(i).stop_long = coordonneesStops.get(j).longitude;
+		if((!stops.get(i).stop_lat.equals(coordonneesStops.get(j).latitude)) ||(!stops.get(i).stop_long.equals(coordonneesStops.get(j).longitude)) ){
+		System.out.println("stop normal coord:  "+
+				stops.get(i).stop_lat+"  "+stops.get(i).stop_long );
+		System.out.println("stop geo coord   :  "+
+				coordonneesStops.get(j).latitude+"  "+coordonneesStops.get(j).longitude );
+		System.out.println(" ");
+		}
+	}
+}
+}
+
+endCode = System.currentTimeMillis();
+System.out.println("fichier geo last2"+(endCode-startCode));
+System.exit(1);
+*/

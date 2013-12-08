@@ -5,17 +5,29 @@ import java.io.File;
 import java.io.IOException;
 import java.util.Collection;
 import java.util.Set;
+
 import org.hibernate.SessionFactory;
 import org.hibernate.cfg.Configuration;
 import org.onebusaway.gtfs.model.AgencyAndId;
 import org.onebusaway.gtfs.model.Stop;
 import org.onebusaway.gtfs.model.calendar.ServiceDate;
 import org.onebusaway.gtfs.serialization.GtfsReader;
+import org.onebusaway.gtfs.services.GtfsDao;
 import org.onebusaway.gtfs.services.GtfsMutableRelationalDao;
 import org.onebusaway.gtfs.services.HibernateGtfsFactory;
 import org.onebusaway.gtfs.services.calendar.CalendarService;
 
 
+
+/**
+ *this class reads the gtfs files and store them in the database
+ *@author  ESGI Students COULIBALY // DA-COSTA // BEKAERT 
+ *@version 1.0
+ *@see HibernateGtfsFactory 
+ *@see {@link GtfsReader}
+ *@see GtfsMutableRelationalDao
+ *@see GtfsDao
+ */
 
 public class TestLoading {
 
@@ -53,6 +65,7 @@ public class TestLoading {
 	    for (Stop stop : stops)
 	      System.out.println(stop.getName());
 
+	    /*
 	    CalendarService calendarService = factory.getCalendarService();
 	    Set<AgencyAndId> serviceIds = calendarService.getServiceIds();
 
@@ -68,8 +81,10 @@ public class TestLoading {
 	      System.out.println("serviceId=" + serviceId + " from=" + from + " to="
 	          + to);
 	    }
+	    */
 	  }
 
+	/*
 	  private static ServiceDate min(ServiceDate a, ServiceDate b) {
 	    if (a == null)
 	      return b;
@@ -85,7 +100,13 @@ public class TestLoading {
 	      return a;
 	    return a.compareTo(b) <= 0 ? b : a;
 	  }
-
+*/
+	  /**
+	   * 
+	   * @param resource
+	   * @return an hibernate session to access the database
+	   * @see HibernateSession
+	   */
 	  private static HibernateGtfsFactory createHibernateGtfsFactory(String resource) {
 
 	    Configuration config = new Configuration();

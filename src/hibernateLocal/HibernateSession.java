@@ -6,6 +6,12 @@ import org.hibernate.SessionFactory;
 import org.hibernate.cfg.Configuration;
 import org.onebusaway.gtfs.services.HibernateGtfsFactory;
 
+
+/**
+ * this class create an hibernate session to read the sql database
+ * @author  ESGI Students COULIBALY // DA-COSTA // BEKAERT 
+ * @version 1.0
+ */
 public class HibernateSession {
 	private static final String KEY_CLASSPATH = "classpath:";
 
@@ -19,6 +25,12 @@ public class HibernateSession {
 		this.resource = "file:src/hibernateLocal/hibernate-configuration.xml";
 	}
 
+	 /**
+		 * create an hibernate session to access the sql database
+		 * 
+		 *  @return the session
+		 *  @see HibernateGtfsFactory
+		 */
 	public HibernateGtfsFactory createHibernateGtfsFactory() {
 
 		    Configuration config = new Configuration();

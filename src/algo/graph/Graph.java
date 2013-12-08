@@ -16,6 +16,11 @@ import algo.graph.interfaces.IGraph;
 import algo.graph.parsing.Parse;
 import algo.graph.parsing.Stops;
 
+/**
+ * this class represent the graph of the intercity transport network of Paris
+ * @author  ESGI Students COULIBALY // DA-COSTA // BEKAERT 
+ * @version 1.0
+ */
 public class Graph implements IGraph, Serializable
 {
 	
@@ -33,6 +38,18 @@ public class Graph implements IGraph, Serializable
 		stops = new ArrayList<Stops>();
 	}
 	
+
+	/**
+	 * this will generate relations beetween two 
+	 * stops
+	 * 
+	 * @param start  the first stop in the relation
+	 * @param target this is the second stop in the relation 
+	 * @param weight this define the weight of the relation
+	 * @param line   this the subway line to consider
+	 * @param modeTransport this is the transportation mode 
+	 * 
+	 */
 	public void addRoute(Stops start, Stops target, int weight,String line, String modeTransport) 
 	{
 		Compare comp = new Compare(start.stop_name,target.stop_name);
@@ -77,6 +94,14 @@ public class Graph implements IGraph, Serializable
 		}
 	}
 	
+	/**
+	 * initialize the stacks of node of the graph 
+	 * 
+	 * @param node   the nodes map of the graph
+	 * @param start  the first stop in the relation
+	 *  
+	 * 
+	 */
 	public void Init(Map<String, Node> node,Node start)
 	{
 		for(String ville : node.keySet())
@@ -92,6 +117,14 @@ public class Graph implements IGraph, Serializable
 		node.get(start.town).weight = 0;
 	}
 	
+	/**
+	 * this return the weight of the relation between two nodes
+	 * 
+	 * @param node   the nodes map of the graph
+	 * @param start  the first stop in the relation
+	 * @return       the weight of the relation
+	 * 
+	 */
 	public Integer Weight(Node start,Node end)
 	{
 		for(int i = 0 ; i < node.get(start.town).getRelations().size() ; i++)
@@ -103,7 +136,15 @@ public class Graph implements IGraph, Serializable
 		return 0;
 	}
 
-	// This method allow create an list with the station of the graph
+	
+	/**
+	 * create a station list which will represent the graph 
+	 * 
+	 * @param graphTotal represent the full graph
+	 * @param listNode   represent some list of nodes
+	 * @param modeTransport the transportation mode 
+	 * 
+	 */
 	public void createListGraph(Map<String, Node> graphTotal,List<Node> listNode,String modeTransport)
 	{
 		if(modeTransport == "TOUS") // If the mode of transport is "Tous" then add all of the graph
@@ -138,6 +179,13 @@ public class Graph implements IGraph, Serializable
 		}
 	}
 	
+	
+	/**
+	 * this return the minimum cost for the Astar method 
+	 * 
+	 * @param listGraph   represent some list of nodes
+	 * @return return the node with the minimum heuristic
+	 */
 	public Node heuristic_cost_minimum(List<Node> listGraph)
 	{
 		Node min = new Node();
@@ -152,6 +200,13 @@ public class Graph implements IGraph, Serializable
 		return min;
 	}
 	
+	/**
+	 * calculate an estimation between two geo points 
+	 * 
+	 * @param start the departure
+	 * @param goal the arrival	
+	 * @return the estimation
+	 */
 	public Integer heuristic_cost_estimate(Node start,Node goal)
 	{
 		try
@@ -178,6 +233,13 @@ public class Graph implements IGraph, Serializable
 		}
 	}
 	
+	/**
+	 * calculate the pathway from A point to B point
+	 * 
+	 * @param start the departure
+	 * @param end   the arrival 	
+	 * @return a list of node representing the pathway
+	 */
 	public List<Node> reconstruct_path(Node start,Node end)
 	{		
 		List<Node> chemin = new ArrayList<Node>();
@@ -234,6 +296,13 @@ public class Graph implements IGraph, Serializable
 		return cheminReverse;
 	}
 		
+	/**
+	 * check if the list of nodes  contains a specific node 
+	 * 
+	 * @param closed_set the list of nodes
+	 * @param neighbor   the node to check 	
+	 * @return true or false
+	 */
 	public boolean inClosedset(List<Node> closed_set,Node neighbor)
 	{
 		for(int i = 0 ; i < closed_set.size();i++)
@@ -245,6 +314,14 @@ public class Graph implements IGraph, Serializable
 		return false;
 	}
 	
+	
+	/**
+	 * check if the list of nodes  contains a specific node 
+	 * 
+	 * @param open_set the list of nodes
+	 * @param neighbor   the node to check 	
+	 * @return true or false
+	 */
 	public boolean inOpenset(List<Node>  open_set,Node neighbor)
 	{
 		for(int i = 0 ; i < open_set.size();i++)
@@ -256,6 +333,16 @@ public class Graph implements IGraph, Serializable
 		return false;
 	}
 	
+	
+	/**
+	 * calculate the slant distance between two location 
+	 * 
+	 * @param lat1  the latitude of the first location
+	 * @param lon1  the longitude of the first location
+	 * @param lat2  the latitude of the second location
+	 * @param lon2  the longitude of the second location
+	 * @return the distance 
+	 */
 	public static double distanceVolOiseauEntre2Points(double lat1, double lon1, double lat2, double lon2) 
 	{
         return
@@ -264,6 +351,18 @@ public class Graph implements IGraph, Serializable
         );
     }
 	
+	/**
+	 * the astar method
+	 * find the pathway between two points 
+	 * with the geolocalization as parameter
+	 * 
+	 * @param graph   the graph
+	 * @param start
+	 * @param end
+	 * @param modeTransport 
+	 * @param critere       the criteria
+	 * @return list of node which represent the pathway 
+	 */
 	public List<Node> AStar(Map<String, Node> graph,String start,String end,String modeTransport,String critere)
 	{
 		// Permet de préremplir les weight ( pout les heuristique )
@@ -292,26 +391,6 @@ public class Graph implements IGraph, Serializable
 			{
 				System.out.println("FINISHED");
 				List<Node> listNode = reconstruct_path(graph.get(start),graph.get(end));
-				/*listNode.add(graph.get(end));
-				
-				List<Node> listNodePerfect = new ArrayList<Node>();
-				
-				for(int i = listNode.size() - 1 ; i > 0 ; i--)
-				{
-					for(int h = 0 ; h < node.get(listNode.get(i).town).getRelations().size() ; h++)
-					{
-						if(node.get(listNode.get(i).town).getRelations().get(h).getEndNode().town.equals(listNode.get(i-1).town))
-						{
-							//System.out.println(listNode.get(i).town + " => " + listNode.get(i-1).town + " ligne : " + node.get(listNode.get(i).town).getRelations().get(h).getmodeTransport());
-							
-							Node node1 = new Node();
-							node1.town = listNode.get(i-1).town;
-							node1.line = node.get(listNode.get(i).town).getRelations().get(h).getmodeTransport();
-							listNodePerfect.add(node1);
-							break;
-						}
-					}
-				}*/
 				return listNode;
 			}
 			
@@ -352,6 +431,18 @@ public class Graph implements IGraph, Serializable
 	}
 	
 	// Method Dijkstra : Algorithm to search shortest route between 2 stations
+	/**
+	 * the  Dijkstra method
+	 * find the most effective pathway between two subway stops 
+	 * with the time as parameter 
+	 * 
+	 * @param graph   the subway graph 
+	 * @param start   the departure stop
+	 * @param end     the arrival stop
+	 * @param modeTransport the transportation mode
+	 * @param critere       the time 
+	 * @return list of node which represent the pathway from start stop to the end stop 
+	 */
 	public List<Node> Dijkstra(Map<String, Node> graph,String start,String end,String modeTransport,String critere)
 	{
 		try
@@ -377,14 +468,21 @@ public class Graph implements IGraph, Serializable
 				{		
 					if(graph.get(n1.town).getRelations().get(i).getStartNode().town.equals(n1.town))
 					{						
-						if(graph.get(n1.town).getRelations().get(i).getEndNode().weight > graph.get(n1.town).getRelations().get(i).getStartNode().weight + Weight(graph.get(n1.town).getRelations().get(i).getStartNode(),graph.get(n1.town).getRelations().get(i).getEndNode()))
+						int n1RiEndNodeWeight   = graph.get(n1.town).getRelations().get(i).getEndNode().weight;
+						int n1RiStartNodeWeight = graph.get(n1.town).getRelations().get(i).getStartNode().weight;
+						Node n1RiEndNode        = graph.get(n1.town).getRelations().get(i).getEndNode();
+						Node n1RiStartNode      = graph.get(n1.town).getRelations().get(i).getStartNode();
+						int n1sumNodesWeight = n1RiStartNodeWeight + Weight(n1RiStartNode,n1RiEndNode);
+						if( n1RiEndNodeWeight > n1sumNodesWeight )
 						{
-							graph.get(n1.town).getRelations().get(i).getEndNode().weight = graph.get(n1.town).getRelations().get(i).getStartNode().weight + Weight(graph.get(n1.town).getRelations().get(i).getStartNode(),graph.get(n1.town).getRelations().get(i).getEndNode());
-							graph.get(n1.town).getRelations().get(i).getEndNode().previousNode = graph.get(n1.town).getRelations().get(i).getStartNode();
+							graph.get(n1.town).getRelations().get(i).getEndNode().weight = n1sumNodesWeight ;
+							graph.get(n1.town).getRelations().get(i).getEndNode().previousNode = n1RiStartNode ;
 													
 							try
 							{
-								graph.get(n1.town).getRelations().get(i).getEndNode().line = graph.get(n1.town).getRelations().get(i).getmodeTransport();
+								// checking the transportation mode???
+								graph.get(n1.town).getRelations().get(i).getEndNode().line = 
+										graph.get(n1.town).getRelations().get(i).getmodeTransport();
 								
 								if(graph.get(n1.town).getRelations().get(i).getStartNode().line != null)
 								{
@@ -445,6 +543,12 @@ public class Graph implements IGraph, Serializable
 		}
 	}
 	
+	/**
+	 * find the with the minimum weight between a list of nodes
+	 * 
+	 *  @param listGraph the list of nodes
+	 *  @return the node with the minimum
+	 */
 	public Node Trouve_min(List<Node> listGraph)
 	{
 		Node min = new Node();
@@ -459,6 +563,9 @@ public class Graph implements IGraph, Serializable
 		return min;
 	}
 
+	/**
+	 * print the path useless
+	 */
 	public void findRoute(String start, String target) 
 	{
 		// Algorithme de Dijkstra
@@ -472,80 +579,26 @@ public class Graph implements IGraph, Serializable
 	
 	public static void main(String[] args)
 	{
-		/*Graph g = new Graph();
+	
 		
-		g.listRelation.clear();
-		g.addRoute("A","B",85,"l");
-		g.addRoute("B","F",80,"l");
-		g.addRoute("F","I",250,"l");
-		g.addRoute("I","J",84,"l");
+		//Parse parse = new Parse();
+		//Graph g = parse.getGraph();
 		
-		g.addRoute("A","C",217,"l");
-		g.addRoute("C","G",186,"l");
 		
-		g.addRoute("C","H",103,"l");
-		g.addRoute("H","D",183,"l");
-		g.addRoute("H","J",167,"l");
+		GraphSerialized deserialized  = null;
+		try {
+			deserialized = GraphSerialized.deSerialise("ressources/graph2") ;
+		} catch (IOException e1) {
+			// TODO Auto-generated catch block
+			JOptionPane.showMessageDialog(null,"failed to load the graph");
+		}
+		Graph g = deserialized.getSerializedGraph();
 		
-		g.addRoute("A","E",173,"l");
-		g.addRoute("E","J",502,"l");*/
-		
-		Parse parse = new Parse();
-		Graph g = parse.getGraph();
-		
-		 /*for(String ville : g.node.keySet())
-		 {
-			 if(g.getRelation(ville) > 1)
-			 {
-				 for(int i = 0 ; i < g.node.get(ville).getRelations().size() ; i++)
-				 {
-					 System.out.println(g.node.get(ville).getRelations().get(i).getStartNode().town + " => " + g.node.get(ville).getRelations().get(i).getEndNode().town);
-				 }
-			 }
-		 }*/
-		
-		//List<Node> chemin = g.Dijkstra(g.node,"La Courneuve-8-Mai-1945","Balard","TOUS");
-		g.AStar(g.node,"La Courneuve-8-Mai-1945","Montparnasse-Bienvenue","TOUS","OK");
+		List<Node> chemin = g.Dijkstra(g.node,"République","Balard","TOUS","OK");
+		//g.AStar(g.node,"La Courneuve-8-Mai-1945","Montparnasse-Bienvenue","TOUS","OK");
 		// List<Node> chemin = g.Dijkstra(g.node,"Balard","Pointe du Lac","TOUS","OK");
 		
-		//List<Node> chemin = g.Test(g.node,"La Courneuve-8-Mai-1945","Buttes-Chaumont");
-		/*for(int i = chemin.size()-1 ; i >= 0  ; i--)
-		{
-			if(i != 0)
-			{
-				for(int j = 0 ; j < g.node.get(chemin.get(i).town).getRelations().size() ; j++)
-				{
-					if(g.node.get(chemin.get(i).town).getRelations().get(j).getEndNode().town.equals(chemin.get(i-1).town))
-					{
-						chemin.get(i).ligne = g.node.get(chemin.get(i).town).getRelations().get(j).getmodeTransport();
-						ligne = chemin.get(i).ligne;
-					}
-				}
-			}
-			
-			else
-			{
-				chemin.get(i).ligne = ligne;
-			}
-		}*/
-		
-		/*String messageDisplay = "";
-		String ligneTemp = "";
-		ligneTemp = chemin.get(chemin.size()-1).line;
 
-		System.out.println("De " + chemin.get(chemin.size()-1).town + " : " + chemin.get(chemin.size()-1).line);
-		for(int i = chemin.size()-1 ; i >= 0  ; i--)
-		{
-			if(!ligneTemp.equals(chemin.get(i).line))
-			{
-				System.out.println(" jusqua : " + chemin.get(i+1).town);
-
-				System.out.println("De " + chemin.get(i+1).town + " : " + chemin.get(i).line);
-			}
-			ligneTemp = chemin.get(i).line;
-		}
-		
-		System.out.println(" jusqua : " + chemin.get(0).town);*/
 	}
 
 
