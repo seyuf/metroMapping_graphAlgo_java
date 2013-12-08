@@ -330,7 +330,7 @@ public class MainPage
 			double co2calcul = 0;
 			
 			weight += getDistance(g,chemin.get(chemin.size()-1),chemin.get(chemin.size()-2));
-			System.out.println("Distance entre " + chemin.get(chemin.size()-1) + " � " + chemin.get(chemin.size()-2) + " : " + weight);			
+			System.out.println("Distance entre " + chemin.get(chemin.size()-1) + " a " + chemin.get(chemin.size()-2) + " : " + weight);			
 			
 			String stringLastheureTemp = Integer.toString(heureDepart);
 			String stringLastMinuteTemp =	Integer.toString(minuteDepart);
