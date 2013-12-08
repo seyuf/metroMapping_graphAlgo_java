@@ -357,7 +357,7 @@ public class Graph implements IGraph, Serializable
 	 */
 	public List<Node> AStar(Map<String, Node> graph,String start,String end,String modeTransport,String critere)
 	{
-		// Permet de préremplir les weight ( pout les heuristique )
+		// Permet de preremplir les weight ( pout les heuristique )
 		//Dijkstra(graph,start,end,modeTransport,critere);
 
 		List<Node> closedset = new ArrayList<Node>();
@@ -586,7 +586,7 @@ public class Graph implements IGraph, Serializable
 		}
 		Graph g = deserialized.getSerializedGraph();
 		
-		List<Node> chemin = g.Dijkstra(g.node,"République","Balard","TOUS","OK");
+		List<Node> chemin = g.Dijkstra(g.node,"Republique","Balard","TOUS","OK");
 		//g.AStar(g.node,"La Courneuve-8-Mai-1945","Montparnasse-Bienvenue","TOUS","OK");
 		// List<Node> chemin = g.Dijkstra(g.node,"Balard","Pointe du Lac","TOUS","OK");
 		

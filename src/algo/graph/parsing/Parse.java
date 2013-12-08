@@ -72,7 +72,7 @@ public class Parse
 	 */
 	public Graph getGraph()
 	{
-		// Cr�ation du Graph a retourner
+		// Creation du Graph a retourner
 		
 		
 		    HibernateSession hyber = new HibernateSession();
@@ -102,7 +102,7 @@ public class Parse
 		   
 		    
 		    
-			// Chargement du fichier permettant de r�cup�rer les correspondances et les d�lais entre les stations 
+			// Chargement du fichier permettant de recuperer les correspondances et les delais entre les stations 
 			try{
 		    String fichierStop_Times = "ressources/stop_times.txt";
 			InputStream ipsStop_Times = new FileInputStream(fichierStop_Times); 
@@ -134,11 +134,11 @@ public class Parse
 			    }
 
 
-			System.out.println("Parsing termin�");
+			System.out.println("Parsing termine");
 			System.out.println("");
 			
 			
-			// Boucle permettant de stockers les diff�rentes correspondance
+			// Boucle permettant de stockers les differentes correspondance
 			
 			for(Routes route : routes)
 			{
@@ -193,7 +193,7 @@ public class Parse
 						 //System.out.println("1  "+mTotal1);
 						// System.out.println("2  "+mTotal2);
 
-						// calcul de l'�cart en minutes
+						// calcul de l'ecart en minutes
 						int ecart =  mTotal2-mTotal1 ;
 									
 						g.addRoute(depart,arrive,ecart,relationString.get(i).modeTransport,relationString.get(i).ligne);
