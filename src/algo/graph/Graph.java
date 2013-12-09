@@ -22,8 +22,7 @@ import algo.graph.parsing.Stops;
  * @version 1.0
  */
 public class Graph implements IGraph, Serializable
-{
-	
+{	
 	/**
 	 * 
 	 */
@@ -110,10 +109,12 @@ public class Graph implements IGraph, Serializable
 			{
 				node.get(ville).weight = 9999999;
 				node.get(ville).previousNode = null;
+				node.get(ville).came_from = null;
 				// node.get(ville).line = null;
 			}
 		}
 		
+		node.get(start.town).came_from = null;
 		node.get(start.town).weight = 0;
 	}
 	
@@ -353,6 +354,8 @@ public class Graph implements IGraph, Serializable
 	{
 		List<Node> closedset = new ArrayList<Node>();
 		List<Node> openset = new ArrayList<Node>();
+		
+		Init(graph,graph.get(start));
 		
 		Map<String, Node> came_from = new HashMap<String,Node>();
 		
